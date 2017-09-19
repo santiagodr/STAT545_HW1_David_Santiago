@@ -7,7 +7,13 @@ Welcome to the repo of my first Assignment for [**STAT545**](http://stat545.com)
 
 ### Reporting process...
 
-At first I just created the Repo for this homework + README.md file and did my first edits to this using the browser. Then, I cloned the repo to my local copy and started using the recommended workflow *pull - edits - save - commit - push*
+- **README.md file ** At first I just created the Repo for this homework + README.md file and did my first edits to this using the browser. Then, I cloned the repo to my local copy and started using the recommended workflow *pull - edits - save - commit - push*. I also added a photo.
+
+- **Gapminder exploration** The homework asked to work on the same R Markdown document we started on Sept 14, but I didn't really have one specific for Gapminder, I had only an example of Rmd in general and another R script for Gapminder. So, I started a new one here for the homework using R Studio and *pull - edits - save - commit - push*.
+
+
+
+
 
 
 

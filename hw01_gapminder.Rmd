@@ -1,0 +1,22 @@
+---
+title: "Gapminder exploration"
+output: github_document
+---
+
+This R Markdown document is for exploration of Gapminder
+
+First, I have to load gapminder and tidyverse
+```{r warning=TRUE}
+library("gapminder")
+library("tidyverse")
+```
+
+I can check some of the properties of this database using basic functions such as `head` or `str`
+```{r}
+head(gapminder) # just to check first lines
+str(gapminder) # to inspect a dataframe
+summary(gapminder) # summary of everything
+glimpse(gapminder) # show variables on the opposite side
+```
+
+
