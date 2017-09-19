@@ -25,4 +25,8 @@ I can also visualize the data with a basic plot, for example for two variables L
 plot(lifeExp ~ year, gapminder)
 ```
 
+I also wanted to visualize Life Expectancy overall, so I used a histogram
+```{r, fig.width= 6, fig.height= 4}
+hist(gapminder$lifeExp)
+```
 

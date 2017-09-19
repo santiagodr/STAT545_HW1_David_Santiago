@@ -91,3 +91,11 @@ plot(lifeExp ~ year, gapminder)
 ```
 
 ![](hw01_gapminder_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-3-1.png)
+
+I also wanted to visualize Life Expectancy overall, so I used a histogram
+
+``` r
+hist(gapminder$lifeExp)
+```
+
+![](hw01_gapminder_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-4-1.png)
