@@ -19,4 +19,10 @@ summary(gapminder) # summary of everything
 glimpse(gapminder) # show variables on the opposite side
 ```
 
+I can also visualize the data with a basic plot, for example for two variables Life expectancy and year. In this case I modify the size of the graph as well...
+
+```{r, fig.width= 6, fig.height= 4}
+plot(lifeExp ~ year, gapminder)
+```
+
 
