@@ -1,0 +1,3 @@
+# This will be a repository for all assignments of STAT545
+
+Currently, I'm migrating all files of HW01 to a specific folder for that assignment, so things are not ready yet!, just in case anyone is evaluating this now...
