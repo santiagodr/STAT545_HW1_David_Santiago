@@ -1,0 +1,32 @@
+---
+title: "gapminder exploration hw02"
+output: github_document
+---
+
+We already installed the packages, so I'll just go ahead and load them
+```{r}
+library("gapminder")
+library("tidyverse")
+```
+
+## Explore the gapminder object:
+
+Is it a data.frame, a matrix, a vector, a list?
+```{r}
+typeof(gapminder)
+```
+Answer: Gapminder is an object of the type *list*. I used the function `typeof` to ask for its type
+
+What’s its class?
+```{r}
+class(gapminder)
+```
+
+How many variables/columns?
+```{r}
+dim(gapminder)
+```
+
+How many rows/observations?
+Can you get these facts about “extent” or “size” in more than one way? Can you imagine different functions being useful in different contexts?
+What data type is each variable?
