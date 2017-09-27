@@ -302,7 +302,7 @@ ggplot(data=gapminder,
 More `filter`, `select` and `ggplot` and `%>%`
 ----------------------------------------------
 
-I want to see the population growth of the smallest countries in the world. Meaning countries with less than a million habitants. I will export these data into a table first, and then will visualize them in a graph.
+I want to see the population growth of the smallest countries in the world. Meaning countries with less than a million habitants. I will export these data into a table first using `knitr:: kable`, and then I will visualize them in a graph.
 
 ``` r
 smallcountries <- filter(gapminder, pop <= 1.00e+6) %>%
@@ -505,3 +505,5 @@ filter(gapminder, pop <= 1.00e+6) %>%
 ```
 
 ![](gapminder_dplyr_hw02_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-18-1.png)
+
+We can see that most small countries are in Africa, and than some of them have grown to more than 1 million inhabitants in the period between 1952 and 2007.
