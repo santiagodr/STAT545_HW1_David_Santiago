@@ -1,32 +1,88 @@
 ---
-title: "gapminder exploration hw02"
+title: "Gapminder exploration with dplyr and ggplot2 hw02"
 output: github_document
 ---
 
-We already installed the packages, so I'll just go ahead and load them
+## Bring data in
+
+We already installed the packages, so I'll just load them
 ```{r}
 library("gapminder")
 library("tidyverse")
 ```
 
-## Explore the gapminder object:
+## Smell test the data
 
 Is it a data.frame, a matrix, a vector, a list?
 ```{r}
 typeof(gapminder)
 ```
-Answer: Gapminder is an object of the type *list*. I used the function `typeof` to ask for its type
+**Answer**: Gapminder is an object of the type *list*. I used the function `typeof` to ask for its type
 
 What’s its class?
 ```{r}
 class(gapminder)
 ```
+**Answer**: If I understand *data structures*, gapminder is both a tibble and a dataframe as we can see using `class` for the different elements in the list.
 
 How many variables/columns?
 ```{r}
-dim(gapminder)
+ncol(gapminder)
 ```
+**Answer**: There are 6 columns in gapminder. The easiest way to see this is using `ncol` as well as for the number of rows using `nrow`
 
 How many rows/observations?
+```{r}
+nrow(gapminder)
+```
+**Answer**: There are 1704 rows
+
 Can you get these facts about “extent” or “size” in more than one way? Can you imagine different functions being useful in different contexts?
+
+**Answer**: Yes! I'm sure there are tons of ways to do that in r. Two ways I can think of are using `dim` to see the dimensions of the dataframe, and `str` to see the whole structure.
+Personally, I always use `str` to inspect not only the dimensions of the dataframe but also the type of all variables. But in a different context if someone is only interested in the size of the dataframe, `dim` would make the trick.
+```{r}
+dim(gapminder)
+str(gapminder)
+```
+
 What data type is each variable?
+
+**Answer**: We can easily check this using `str` as seen above. *country* and *continent* are objects of the type `Factor`, *year* and *pop* are `integer`, and *lifeExp* and *gdpPercap* are `numeric`.
+
+
+## Explore individual variables
+I will explore the categorical variable `country` and two quantitative variables population `pop` and year `year`
+
+What are possible values (or range, whichever is appropriate) of each variable?
+
+**Answer1**: For the categorical variable, we can see all possible values or *non-repeated* entries using the function `unique`
+
+```{r}
+unique(gapminder$country)
+```
+
+We can also see from this list of names that there are 142 countries. Or we can directly ask that using `n_distinct` or `length`
+```{r}
+length(unique(gapminder$country))
+```
+
+For the **quantitative variables**, I am assuming there wont be data for many years so we can also use `unique` to see the specific years and `range` to see the oldest and most recent. But for population, we can expect that all countries will have different pop sizes every year, so that would be a very long list, in this case it is better to explore the range.
+
+For `year`:
+```{r}
+unique(gapminder$year)
+range(gapminder$year)
+n_distinct(gapminder$year)
+```
+
+For `pop`
+```{r}
+range(gapminder$pop)
+```
+
+**Answer2**: There are data from 12 years starting in 1952 with the most recent data from 2007.
+There are population sizes starting from 60011 to 1318683096 (individuals!, I guess...)
+
+
+What values are typical? What’s the spread? What’s the distribution? Etc., tailored to the variable at hand
