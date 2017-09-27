@@ -71,9 +71,9 @@ For the **quantitative variables**, I am assuming there wont be data for many ye
 
 For `year`:
 ```{r}
-unique(gapminder$year)
-range(gapminder$year)
-n_distinct(gapminder$year)
+unique(gapminder$year) # only unique entries
+range(gapminder$year) # gives min and max
+n_distinct(gapminder$year) # gives total of unique entries
 ```
 
 For `pop`
@@ -85,4 +85,88 @@ range(gapminder$pop)
 There are population sizes starting from 60011 to 1318683096 (individuals!, I guess...)
 
 
-What values are typical? What’s the spread? What’s the distribution? Etc., tailored to the variable at hand
+What values are typical? What’s the spread? What’s the distribution? Etc., tailored to the variable at hand.
+
+This would be more appropriate to explore using a quantitative variable that have lots of different values, such as *pop* (population size) vs *year*.
+
+**Answer**: We can start exploring the values of a variable using the function `summary`. In this case the mean population size for all countries in all years is 2.960e+07; the smallest population recorded is 6.001e+04, and the largest is 1.319e+09.
+
+```{r}
+summary(gapminder$pop)
+```
+
+Since there are too many values for this variable (1704 using `n_distinct(gapminder$pop)`). It would be better to see the mean population size by country across years or in a given year, for which we will have to extract subsets of data. But I guess that is the objective in the next exercise. So for now, we can just visualize the distribution of population sizes in the whole data set using an histogram
+
+```{r}
+hist(gapminder$pop)
+```
+
+Not a very nice plot, but we can see that there are many "small" values or populations and very few "big" populations.
+
+We could also try to see this if we `cut` the variable *pop* in for example ten bins of equal size, and then count how many observations are in each bin:
+
+```{r}
+x<-cut(gapminder$pop, breaks = 10) #break up continuous variable in 10 bins
+table(x)
+```
+
+Here, we can see that 1650 entries are in the lower 1/10 of all population values, which is basically between way less than 1 million and 132 millions of habitants, and very few entries are in values bigger than that...
+
+## Explore various plot types
+
+First, I will plot population size per year for all countries, but colouring by continent. I want to visualize both, lines and points for each country.  
+
+```{r}
+ggplot(data = gapminder, 
+       aes(x=year, y=pop, 
+           by=country, color=continent)) +
+  geom_line() + 
+  geom_point()
+```
+
+I want to see the population growth but for very large countries, so I will filter the data to visualize only countries with more than 100 million people. I'm also `piping` filtered data into ggplot in order to practice `%>%` and `filter`
+
+```{r}
+gapminder %>%
+  filter(pop >= 1.00e+8) %>%
+  ggplot(aes(x = year, y = pop,
+             by = country, color = country)) +
+  geom_point()
+```
+
+I want to also explore the distribution of population sizes by continent, so I will split continent into five panels and will use a density plot.
+
+```{r}
+ggplot(data=gapminder, 
+       aes(x=pop, 
+          fill=continent))+
+    geom_density()+
+    facet_wrap(~continent)
+```
+
+## More `filter`, `select` and `ggplot` and `%>%`
+
+I want to see the population growth of the smallest countries in the world. Meaning countries with less than a million habitants. I will export these data into a table first using `knitr:: kable`, and then I will visualize them in a graph.  
+
+```{r}
+smallcountries <- filter(gapminder, pop <= 1.00e+6) %>%
+  select(country, pop, year)
+library(knitr)
+kable(smallcountries[1:3])
+```
+
+
+Now, I want to see the population growth of the "small" countries by continent, so basically countries that have less than 1 million habitants.
+
+
+```{r}
+filter(gapminder, pop <= 1.00e+6) %>% 
+  ggplot(aes(x=year, y=pop,
+             by = country, color = country)) + 
+  geom_point(alpha=0.5) + 
+  facet_wrap(~continent)
+```
+
+
+We can see that most small countries are in Africa, and than some of them have grown to more than 1 million inhabitants in the period between 1952 and 2007.
+
