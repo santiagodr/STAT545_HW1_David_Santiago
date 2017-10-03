@@ -1,0 +1,49 @@
+---
+title: "Use dplyr to manipulate and explore data"
+author: "Santiago D"
+date: '2017-10-02'
+output: github_document
+---
+
+### Load data and packages
+```{r}
+library("gapminder")
+library("tidyverse")
+```
+
+
+### Tasks selected
+- Maximum and minimum GDP per capita for all continents
+- 
+
+## Task #1 
+**Objective**: Get the maximum and minimum of GDP per capita for all continents.
+**Process**: Use `group_by` and `summarise` to obtain the min and max of the variable, save that as a new object and use that object to create a table using `knitr::kable` and plot using `ggplot2`
+
+```{r}
+gdpmaxmin <- gapminder %>% 
+  group_by(continent) %>% 
+  summarise(min_gdpPercap = min(gdpPercap),
+            max_gdpPercap = max(gdpPercap))
+
+knitr::kable(gdpmaxmin, col.names = c("Continent", "Minimum GDP per capita", "Maximum GDP per capita"))
+```
+
+```{r}
+ggplot(gdpmaxmin) +
+  geom_point(aes(x = continent, y = min_gpdPercap))
+```
+ working on graph....
+ 
+```{r}
+gapminder %>% 
+  group_by(continent) %>% 
+  summarise(min_gdpPercap = min(gdpPercap),
+            max_gdpPercap = max(gdpPercap)) %>% 
+  ggplot(aes(continent), colour = continent) +
+  geom_point(continent, min_gdpPercap)
+
+```
+
+Pick at least three of the tasks below and attack each with a table and figure
+
