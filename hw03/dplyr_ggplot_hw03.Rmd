@@ -17,33 +17,78 @@ library("tidyverse")
 - 
 
 ## Task #1 
+
 **Objective**: Get the maximum and minimum of GDP per capita for all continents.
-**Process**: Use `group_by` and `summarise` to obtain the min and max of the variable, save that as a new object and use that object to create a table using `knitr::kable` and plot using `ggplot2`
+
+**Process**: Use `group_by` and `summarise` to obtain the min and max of the variable, save that as a new object and use that object to create a table using `knitr::kable` and plot using `ggplot2`.
+
+**Resources**: I got some ideas for the graph from this `stackoverflow` [link](https://stackoverflow.com/questions/27205629/plot-ranges-of-variable-in-data)
+
 
 ```{r}
-gdpmaxmin <- gapminder %>% 
+gdpsummary <- gapminder %>% 
   group_by(continent) %>% 
   summarise(min_gdpPercap = min(gdpPercap),
-            max_gdpPercap = max(gdpPercap))
-
-knitr::kable(gdpmaxmin, col.names = c("Continent", "Minimum GDP per capita", "Maximum GDP per capita"))
+            max_gdpPercap = max(gdpPercap),
+            mean_gdpPercap = mean(gdpPercap))
 ```
+
+Table
 
 ```{r}
-ggplot(gdpmaxmin) +
-  geom_point(aes(x = continent, y = min_gpdPercap))
+knitr::kable(gdpsummary, col.names = c("Continent", "Minimum GDP per capita", 
+                                       "Maximum GDP per capita", "Mean GDP per capita"))
 ```
- working on graph....
- 
+
+Figure 
+
+```{r}
+ggplot(gdpsummary, aes(x = continent)) +
+  geom_point(aes(y = min_gdpPercap), size = 3, color = "skyblue4") +
+  geom_point(aes(y = max_gdpPercap), size = 3, color = "skyblue4") +
+  geom_linerange(aes(ymin = min_gdpPercap,ymax = max_gdpPercap),linetype = 2,color = "blue") +
+  labs(title = "GDP per capita for each continent", x = "Continent", y = "GDP per capita") +
+  ylim(0,120000) +
+  theme_classic()
+```
+
+Optional Figure
+
+Another option would be to use a boxplot of GDP per capita per continent, which would display a better distribution of the values, including the minimum and maximum.
+
 ```{r}
 gapminder %>% 
   group_by(continent) %>% 
-  summarise(min_gdpPercap = min(gdpPercap),
-            max_gdpPercap = max(gdpPercap)) %>% 
-  ggplot(aes(continent), colour = continent) +
-  geom_point(continent, min_gdpPercap)
-
+  ggplot(aes(x = continent, y = gdpPercap, fill = continent)) +
+  geom_boxplot() +
+  labs(title = "GDP per capita for each continent", x = "Continent", y = "GDP per capita") +
+  ylim(0, 120000) +
+  guides(fill = FALSE) +
+  theme_classic()
 ```
 
-Pick at least three of the tasks below and attack each with a table and figure
+
+## Task #2
+
+**Objective**: How is life expectancy changing over time on different continents?
+
+**Process**: Use `group_by` and `mutate` to create a new variable that capture the change in ife expectancy over years, but in this case by calculating the difference between life expectancy in a given year with the first year with data for each country. I saved that as a new object.
+
+To display the change over time per continent in a table, I decided to summarize the _average_ change in life Expectancy per year and used `knitr::kable`. However for the graph, it is more informative to keep all values for each country, but including a linear regression per continent to see the trend in change of Life expectancy, of course using `ggplot2`.
+
+```{r}
+change_lifeExp <- gapminder %>% 
+  group_by(country) %>% 
+  arrange(year) %>% 
+  mutate (change_lifeExp = lifeExp - min(lifeExp))
+```
+
+Table
+
+```{r}
+mean_change <- change_lifeExp %>% 
+  group_by(continent, year) %>% 
+  summarise(mean_change = mean(change_lifeExp)) 
+knitr::kable(mean_change, col.names = c("Continent", "year", "Mean ∆ Life expectancy"))
+```
 
