@@ -1,31 +1,21 @@
 Use dplyr to manipulate and explore data
 ================
-Santiago D
+Santiago David
 2017-10-02
 
 ### Load data and packages
 
 ``` r
-library("gapminder")
-library("tidyverse")
+suppressPackageStartupMessages(library(tidyverse))
+suppressPackageStartupMessages(library(gapminder))
 ```
-
-    ## Loading tidyverse: ggplot2
-    ## Loading tidyverse: tibble
-    ## Loading tidyverse: tidyr
-    ## Loading tidyverse: readr
-    ## Loading tidyverse: purrr
-    ## Loading tidyverse: dplyr
-
-    ## Conflicts with tidy packages ----------------------------------------------
-
-    ## filter(): dplyr, stats
-    ## lag():    dplyr, stats
 
 ### Tasks selected
 
 -   Maximum and minimum GDP per capita for all continents
+-   Spread of GDP per capita within continent
 -   Life expectancy change over time on different continents
+-   Custom one and maybe interesting story
 
 Task \#1
 --------
@@ -73,9 +63,46 @@ ggplot(gdpsummary, aes(x = continent)) +
 
 ![](dplyr_ggplot_hw03_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-4-1.png)
 
-Optional Figure
+**Observations**: We can see from both the table and the figure that Asia has the greatest range in GDP per capita, and Oceania and Africa have small ranges compared to the other continents, but Oceania with very high minimum and maximum values for GDP per capita compared to Africa. A boxplot would be particularly useful in showing the distribution of values (see next task).
 
-Another option would be to use a boxplot of GDP per capita per continent, which would display a better distribution of the values, including the minimum and maximum.
+Task \#2
+--------
+
+**Objective**: Look at the spread of GDP per capita within the continents
+
+**Process**: There are different ways to describe the spread of a variable. I think a good way is using a boxplot which gives you the minimum, maximum, median and quantiles for the variable of interest. I used `group_by` and `summarize` to create 25%, 50%, and 75% quantiles of GDP per capita for each continent, plus the mean and standard deviation, and a boxplot to show the spread of this variable. I used `knitr::kable` and `ggplot` to create the output.
+
+**Additional Resources**: I got help from [this](https://stackoverflow.com/questions/30488389/using-dplyr-window-functions-to-calculate-percentiles) stackoverflow post to use `quantile`
+
+``` r
+gdpsum <- gapminder %>% 
+  group_by(continent) %>% 
+  summarise(avg = mean(gdpPercap),
+            sd = sd(gdpPercap),
+            "25%" = quantile(gdpPercap, probs = 0.25),
+            "50%" = quantile(gdpPercap, probs = 0.50),
+            "75%" = quantile(gdpPercap, probs = 0.75), 
+            n = n())
+```
+
+Table
+
+``` r
+knitr::kable(gdpsum, col.names = c("Continent", "GDP per capita (Mean)", 
+                                       "GDP per capita (SD)", "lower quantile", 
+                                   "middle quantile", "upper quantile", "sample size (n)"),
+             digits = 1)
+```
+
+| Continent |  GDP per capita (Mean)|  GDP per capita (SD)|  lower quantile|  middle quantile|  upper quantile|  sample size (n)|
+|:----------|----------------------:|--------------------:|---------------:|----------------:|---------------:|----------------:|
+| Africa    |                 2193.8|               2827.9|           761.2|           1192.1|          2377.4|              624|
+| Americas  |                 7136.1|               6396.8|          3427.8|           5465.5|          7830.2|              300|
+| Asia      |                 7902.2|              14045.4|          1057.0|           2646.8|          8549.3|              396|
+| Europe    |                14469.5|               9355.2|          7213.1|          12081.7|         20461.4|              360|
+| Oceania   |                18621.6|               6359.0|         14141.9|          17983.3|         22214.1|               24|
+
+Figure
 
 ``` r
 gapminder %>% 
@@ -88,43 +115,9 @@ gapminder %>%
   theme_classic()
 ```
 
-![](dplyr_ggplot_hw03_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-5-1.png)
+![](dplyr_ggplot_hw03_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-7-1.png)
 
-**Observations**: We can see from both the table and the figure(s) that Asia has the greatest range in GDP per capita, and Oceania and Africa have small ranges compared to the other continents, but Oceania with very high minimum and maximum values for GDP per capita compared to Africa. The boxplot is particularly useful in showing the distribution of values, and that the maximum GDP per capita for every continent are actually very extreme compared to the rest of the data.
-
-Task \#2
---------
-
-**Objective**: Look at the spread of GDP per capita within the continents
-
-**Process**: Use `group_by` and `mutate` to create a new variable that capture the change in ife expectancy over years, but in this case by calculating the difference between life expectancy in a given year with the first year with data for each country. I saved that as a new object.
-
-To display the change over time per continent in a table, I decided to summarize the *average* change in life expectancy per year and used `knitr::kable`. However for the graph, it is more informative to keep all values for each country, but including a linear regression per continent to see the trend in change of life expectancy, also using `ggplot2`.
-
-**Additional Resources**: I used the function `spread` to display an optional table following [this](http://tidyr.tidyverse.org/reference/spread.html) link
-
-``` r
-gapminder %>% 
-  group_by(continent) %>% 
-  summarise("25%" = quantile(gdpPercap, probs = 0.25),
-            "50%" = quantile(gdpPercap, probs = 0.50),
-            "75%" = quantile(gdpPercap, probs = 0.75), 
-            avg = mean(gdpPercap),
-            n = n())
-```
-
-    ## # A tibble: 5 x 6
-    ##   continent     `25%`     `50%`     `75%`       avg     n
-    ##      <fctr>     <dbl>     <dbl>     <dbl>     <dbl> <int>
-    ## 1    Africa   761.247  1192.138  2377.417  2193.755   624
-    ## 2  Americas  3427.779  5465.510  7830.210  7136.110   300
-    ## 3      Asia  1056.993  2646.787  8549.256  7902.150   396
-    ## 4    Europe  7213.085 12081.749 20461.386 14469.476   360
-    ## 5   Oceania 14141.859 17983.304 22214.117 18621.609    24
-
-``` r
-?quantile
-```
+**Observations**: The boxplot and table show the spread of GDP per capita within continents, we can see that for all continents most of the data are skewed towards the lower half of possible GDP values, there are very few extreme high values for GDP per capita, especially for Asia. Also, we can check in the table that although America and Asia have relatively similar mean GDP per capita (~7000), the variation (SD) in Asia is very large compared to America (14045 vs 6396.8), because the values for Asia are more spread.
 
 Task \#3
 --------
@@ -192,6 +185,56 @@ ggplot(life_change, aes(year, change_lifeExp, colour = continent)) +
   theme_classic() 
 ```
 
-![](dplyr_ggplot_hw03_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-10-1.png)
+![](dplyr_ggplot_hw03_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-11-1.png)
 
 **Observations**: There must be lots of ways to show the change in Life expectancy over years for each continent. I decided to calculate the change in life expectancy relative to the first year in the database, which is 1952. We can see from the table and figure that overall all continents have shown an increase in life expectancy from 1952 to 2007. Asia and America exhibit a very high increase in life expectancy in this time period of 24.4 and 20.3 years, respectively, compared to the other continents. This is also evident in the slopes of the graph. Interestingly, there are some points in the graph that exhibit a negative value, which imply that for that year the life expectancy of that country was actually lower than the life expectancy in 1952.
+
+Task 4 (just for curiosity and maybe interesting story so it plays for both...)
+-------------------------------------------------------------------------------
+
+**Objective**: I want to see how are population growth and GDP per capita changing in my home country = Colombia (not Columbia)... I'm just curious since I would guess we have grown way faster than our economy, and I want to try plotting two y-axis using ggplot.
+
+**Process**: I will just filter gapminder for "colombia" , and will create a two y-axis graph using `ggplot2` and `knitr::kable` as always. I transformed population to be shown in millions, and saved a object only with the data of interest for Colombia.
+
+**Additional resources**: This plot was only possible thanks to [this](https://rpubs.com/MarkusLoew/226759) Rpubs post!!!!, Thanks a lot!!!
+
+Table
+
+``` r
+gapminder %>% 
+  filter(country == "Colombia") %>%
+  mutate(popmillions = pop/1000000) %>% 
+  select(year, popmillions, gdpPercap) -> colombia
+knitr::kable(colombia, col.names = c("Year", "Population size in millions", "GDP per capita"))
+```
+
+|  Year|  Population size in millions|  GDP per capita|
+|-----:|----------------------------:|---------------:|
+|  1952|                     12.35077|        2144.115|
+|  1957|                     14.48599|        2323.806|
+|  1962|                     17.00989|        2492.351|
+|  1967|                     19.76403|        2678.730|
+|  1972|                     22.54289|        3264.660|
+|  1977|                     25.09441|        3815.808|
+|  1982|                     27.76464|        4397.576|
+|  1987|                     30.96424|        4903.219|
+|  1992|                     34.20272|        5444.649|
+|  1997|                     37.65783|        6117.362|
+|  2002|                     41.00823|        5755.260|
+|  2007|                     44.22755|        7006.580|
+
+Figure
+
+``` r
+colombia %>% 
+  ggplot(aes(x = year)) +
+  geom_line(aes(y = popmillions, colour = "Pop size (millions)")) +
+  geom_line(aes(y = gdpPercap/150, colour = "GDP per capita")) + #need transformation
+  scale_y_continuous(sec.axis = sec_axis(~.*150, name = "GDP per capita")) + #needs to revert trans
+  labs(title = "Change in population size and GDP per capita in Colombia in 1952-2007", x = "Years", y = "Population size in millions", colour = "Variable") +
+  theme_classic()
+```
+
+![](dplyr_ggplot_hw03_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-13-1.png)
+
+**Observations**: First, it wasn't that easy to create a two y-axis plot... But I guess it is sort of interesting to see, that both variables have continously increased in the time period, and that GDP per cap crashed a bit in the late 90's compared to the population growth that have never stopped!, crazy!
