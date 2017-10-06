@@ -10,3 +10,5 @@ Please follow the links to specific homework!
 - [**Homework 02**](https://github.com/santiagodr/STAT545_hw_David_Santiago/tree/master/hw02) Due Sept 26, 2017
 
 - [**Homework 03**](https://github.com/santiagodr/STAT545_hw_David_Santiago/tree/master/hw03) Due Oct 03, 2017
+
+- [**Homework 04**](https://github.com/santiagodr/STAT545_hw_David_Santiago/tree/master/hw04) Due Oct 11, 2017
