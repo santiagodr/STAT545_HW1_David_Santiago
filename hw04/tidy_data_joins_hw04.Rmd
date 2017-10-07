@@ -41,16 +41,39 @@ colven %>%
   theme_bw()
 ```
 
-**Observations**: From this plot and table we can see that both countries have increased the life expectancy over the years, but Venezuela has always had a life expectancy higher than Colombia (above blue line), specially in the 50's-60's. Both countries have more similar life expectancy in recent years.
+**Observations**: From this figure and table we can see that both countries have increased their life expectancy over the years, but Venezuela has always had a life expectancy higher than Colombia (above blue line), especially in the 50's-60's. Both countries have a more similar life expectancy in recent years (closer to blue line).
 
 **Additional resources**: I got help from the ggplot2 reference webpage for adding [text and labels to a plot](http://ggplot2.tidyverse.org/reference/geom_text.html).
 
 
+## Join, merge, look up
 
+### Activiy #1
+
+**Objective**: Create a second data frame, complementary to Gapminder. Join this with (part of) Gapminder using a dplyr join function and make some observations about the process and result. Explore the different types of joins.
+
+**Process**: Rather than creating a second data frame, I decided to get some open access data from the web to practice `joins` for this activity. I'm interested in global land use change, so I googled and found open access data for Agricultural land (sq. km) for all countries in the world from [The World Bank](http://www.worldbank.org) official webpage. The data can be downloaded as .csv file from [this site](https://data.worldbank.org/indicator/AG.LND.AGRI.K2?end=2016&start=1961&view=chart), and because the license says "open", I'm assuming it is okay to use it here as an example (not 100% sure). 
+
+Loading the data
+```{r}
+agrland <- read.csv(file.choose("API_AG.LND.AGRI.K2_DS2_en_csv_v2.csv"))
+str(agrland)
+as.tibble(agrland)
+View(agrland)
+```
+
+
+```{r}
+View(gapminder)
+```
+
+Temporal
+In case I decided to use it, this is the webpage for land use and agricultural land for the world countries (https://data.worldbank.org/indicator/AG.LND.AGRI.K2?end=2016&start=1961&view=chart)
 
 
 ## But I want to do more!
 
+I also tried the activity #3 but after thinking for a while, I dont see how this new shape of the data will help us to produce a better visualization. As we know, ggplot2 prefer long format, so other than the sort of plot produced in the first part of this homework to compare two countries, I'm not sure this table will help. I would still prefer a "wide" table vs a "long" one for visual comparison of data.
 
 ```{r}
 life_exp_mean <- 
@@ -58,5 +81,5 @@ life_exp_mean <-
   group_by(continent, year) %>% 
   summarise(life_mean = mean(lifeExp)) %>% 
   spread(continent, life_mean)
-knitr::kable(life_exp_mean, caption = "Life expectancy")
+knitr::kable(life_exp_mean)
 ```
