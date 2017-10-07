@@ -1,0 +1,62 @@
+---
+title: 'Homework 4: Tidy data and joins'
+author: "Santiago David"
+date: '2017-10-06'
+output: github_document
+---
+
+### Load data and packages
+```{r}
+suppressPackageStartupMessages(library(tidyverse))
+suppressPackageStartupMessages(library(gapminder))
+```
+
+## Data reshaping
+
+### Activity #2
+
+**Objective**: Make a tibble with one row per year and columns for life expectancy for two or more countries, and use that to make a plot.
+
+**Process**: Colombia and Venezuela were the same country many years ago, I'm curious how life expectancy have changed in their recent past (as separate countries), so I will analyze them.
+First, I filter gapminder by those two countries and all years. Then, I select the variables `country`,`year`, and `lifeExp`, and use `spread` to convert that table into its wide format, and save as a new object.
+
+```{r}
+colven <- gapminder %>% 
+  filter(country %in% c("Colombia", "Venezuela")) %>% 
+  select(country, year, lifeExp) %>% 
+  spread(country, lifeExp)
+knitr::kable(colven, col.names = c("Year", "Life expectancy in Colombia", "Life expectancy in Venezuela"))
+```
+
+**Figure**: We can use this new data shape to look at the comparison of life expectancy of Colombia vs Venezuela. I will include a `geom_abline` with slope=1 and intercept=0, so we can see how different is this comparison to a perfect 1 to 1 relationship in life expectancy for both countries over the years.
+
+```{r}
+colven %>% 
+  ggplot(aes(x = Colombia, y = Venezuela)) +
+  geom_point() +
+  geom_label(aes(x = Colombia, y = Venezuela, label = year, vjust = -0.5)) + #add years to points
+  ylim(50, 75) + xlim(50, 75) +
+  geom_abline(slope = 1, intercept = 0, colour = "4", linetype="longdash") + #add line
+  ggtitle("Comparison of Life Expectancy between Venezuela and Colombia") +
+  theme_bw()
+```
+
+**Observations**: From this plot and table we can see that both countries have increased the life expectancy over the years, but Venezuela has always had a life expectancy higher than Colombia (above blue line), specially in the 50's-60's. Both countries have more similar life expectancy in recent years.
+
+**Additional resources**: I got help from the ggplot2 reference webpage for adding [text and labels to a plot](http://ggplot2.tidyverse.org/reference/geom_text.html).
+
+
+
+
+
+## But I want to do more!
+
+
+```{r}
+life_exp_mean <- 
+  gapminder %>% 
+  group_by(continent, year) %>% 
+  summarise(life_mean = mean(lifeExp)) %>% 
+  spread(continent, life_mean)
+knitr::kable(life_exp_mean, caption = "Life expectancy")
+```
