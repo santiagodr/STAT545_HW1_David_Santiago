@@ -11,7 +11,7 @@ suppressPackageStartupMessages(library(gapminder))
 ```
 
 Data reshaping
---------------
+==============
 
 ### Activity \#2
 
@@ -61,8 +61,36 @@ colven %>%
 
 **Additional resources**: I got help from the ggplot2 reference webpage for adding [text and labels to a plot](http://ggplot2.tidyverse.org/reference/geom_text.html).
 
+### Activity \#3
+
+I also tried the activity \#3 but after thinking for a while, I dont see how this new shape of the data will help us to produce a better visualization. As we know, ggplot2 prefer long format, so other than the sort of plot produced in the previous exercise to compare two countries, I'm not sure this table will help. I would still prefer a "wide" table vs a "long" one for visual comparison of data.
+
+``` r
+life_exp_mean <- 
+  gapminder %>% 
+  group_by(continent, year) %>% 
+  summarise(life_mean = mean(lifeExp)) %>% 
+  spread(continent, life_mean)
+knitr::kable(life_exp_mean)
+```
+
+|  year|    Africa|  Americas|      Asia|    Europe|  Oceania|
+|-----:|---------:|---------:|---------:|---------:|--------:|
+|  1952|  39.13550|  53.27984|  46.31439|  64.40850|  69.2550|
+|  1957|  41.26635|  55.96028|  49.31854|  66.70307|  70.2950|
+|  1962|  43.31944|  58.39876|  51.56322|  68.53923|  71.0850|
+|  1967|  45.33454|  60.41092|  54.66364|  69.73760|  71.3100|
+|  1972|  47.45094|  62.39492|  57.31927|  70.77503|  71.9100|
+|  1977|  49.58042|  64.39156|  59.61056|  71.93777|  72.8550|
+|  1982|  51.59287|  66.22884|  62.61794|  72.80640|  74.2900|
+|  1987|  53.34479|  68.09072|  64.85118|  73.64217|  75.3200|
+|  1992|  53.62958|  69.56836|  66.53721|  74.44010|  76.9450|
+|  1997|  53.59827|  71.15048|  68.02052|  75.50517|  78.1900|
+|  2002|  53.32523|  72.42204|  69.23388|  76.70060|  79.7400|
+|  2007|  54.80604|  73.60812|  70.72848|  77.64860|  80.7195|
+
 Join, merge, look up
---------------------
+====================
 
 ### Activiy \#1
 
@@ -272,58 +300,32 @@ I also want to see whether there are countries in gapminder without information 
 
 ``` r
 gap2 <- gapminder %>% 
-  anti_join(agrland2, by = "country")
+  anti_join(agrland2, by = "country") #create an object and search for unique values
 ```
 
     ## Warning: Column `country` joining factors with different levels, coercing
     ## to character vector
 
 ``` r
-unique(gap2$country)
-```
-
-    ## [1] Venezuela        Taiwan           Syria            Reunion         
-    ## [5] Korea, Dem. Rep. Iran             Hong Kong, China Gambia          
-    ## [9] Egypt           
-    ## 142 Levels: Afghanistan Albania Algeria Angola Argentina ... Zimbabwe
-
-``` r
-head(20) %>% 
+unique(gap2$country) %>%  
   knitr::kable(format = "markdown")
 ```
 
-    ## Warning in kable_markdown(x = structure("20", .Dim = c(1L, 1L), .Dimnames =
-    ## list(: The table should have a header (column names)
+    ## Warning in kable_markdown(x = structure(c("Venezuela", "Taiwan", "Syria", :
+    ## The table should have a header (column names)
 
-|     |
-|----:|
-|   20|
+|                  |
+|:-----------------|
+| Venezuela        |
+| Taiwan           |
+| Syria            |
+| Reunion          |
+| Korea, Dem. Rep. |
+| Iran             |
+| Hong Kong, China |
+| Gambia           |
+| Egypt            |
 
-But I want to do more!
-----------------------
+**Observations**: The `anti_join` shows me that apparently there are no data for 9 countries in the second database, but I suspect there are name issues, such as different names for the same country between databases... For the purposes of this homework, I will not go into fix that... but I demonstrate the use of this type of join to identify differences between databases.
 
-I also tried the activity \#3 but after thinking for a while, I dont see how this new shape of the data will help us to produce a better visualization. As we know, ggplot2 prefer long format, so other than the sort of plot produced in the first part of this homework to compare two countries, I'm not sure this table will help. I would still prefer a "wide" table vs a "long" one for visual comparison of data.
-
-``` r
-life_exp_mean <- 
-  gapminder %>% 
-  group_by(continent, year) %>% 
-  summarise(life_mean = mean(lifeExp)) %>% 
-  spread(continent, life_mean)
-knitr::kable(life_exp_mean)
-```
-
-|  year|    Africa|  Americas|      Asia|    Europe|  Oceania|
-|-----:|---------:|---------:|---------:|---------:|--------:|
-|  1952|  39.13550|  53.27984|  46.31439|  64.40850|  69.2550|
-|  1957|  41.26635|  55.96028|  49.31854|  66.70307|  70.2950|
-|  1962|  43.31944|  58.39876|  51.56322|  68.53923|  71.0850|
-|  1967|  45.33454|  60.41092|  54.66364|  69.73760|  71.3100|
-|  1972|  47.45094|  62.39492|  57.31927|  70.77503|  71.9100|
-|  1977|  49.58042|  64.39156|  59.61056|  71.93777|  72.8550|
-|  1982|  51.59287|  66.22884|  62.61794|  72.80640|  74.2900|
-|  1987|  53.34479|  68.09072|  64.85118|  73.64217|  75.3200|
-|  1992|  53.62958|  69.56836|  66.53721|  74.44010|  76.9450|
-|  1997|  53.59827|  71.15048|  68.02052|  75.50517|  78.1900|
-|  2002|  53.32523|  72.42204|  69.23388|  76.70060|  79.7400|
-|  2007|  54.80604|  73.60812|  70.72848|  77.64860|  80.7195|
+I dont really need a `full_join` or `semi_join` in this example... or joins from the second database to gapminder, since there are so much information in that second database and the outputs will just be super messy.
