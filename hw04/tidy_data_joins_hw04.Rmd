@@ -11,7 +11,7 @@ suppressPackageStartupMessages(library(tidyverse))
 suppressPackageStartupMessages(library(gapminder))
 ```
 
-## Data reshaping
+# Data reshaping
 
 ### Activity #2
 
@@ -45,37 +45,9 @@ colven %>%
 
 **Additional resources**: I got help from the ggplot2 reference webpage for adding [text and labels to a plot](http://ggplot2.tidyverse.org/reference/geom_text.html).
 
+### Activity #3
 
-## Join, merge, look up
-
-### Activiy #1
-
-**Objective**: Create a second data frame, complementary to Gapminder. Join this with (part of) Gapminder using a dplyr join function and make some observations about the process and result. Explore the different types of joins.
-
-**Process**: Rather than creating a second data frame, I decided to get some open access data from the internet to practice `joins` for this activity. I'm interested in global land use change, so I think it will be perfect if I can add a new variable for agricultural land area per year for each country. 
-I googled and found open access data for Agricultural land (sq. km) for all countries in the world from [The World Bank](http://www.worldbank.org) official webpage for years between 1960-2014. The data can be downloaded as `.csv` file from [this site](https://data.worldbank.org/indicator/AG.LND.AGRI.K2?end=2016&start=1961&view=chart), and because the license says "open", I'm assuming it is okay to use it here as an example (not 100% sure). 
-There might be different country names countries between databases and thera are also more years for the second database. So the challenge, is to use a `join` to extract data for agricultural land per country for the years with data in gapminder.
-
-Loading the data
-```{r}
-agrland <- read.csv(file.choose("API_AG.LND.AGRI.K2_DS2_en_csv_v2.csv"))
-str(agrland)
-as.tibble(agrland)
-View(agrland)
-```
-
-
-```{r}
-View(gapminder)
-```
-
-Temporal
-In case I decided to use it, this is the webpage for land use and agricultural land for the world countries (https://data.worldbank.org/indicator/AG.LND.AGRI.K2?end=2016&start=1961&view=chart)
-
-
-## But I want to do more!
-
-I also tried the activity #3 but after thinking for a while, I dont see how this new shape of the data will help us to produce a better visualization. As we know, ggplot2 prefer long format, so other than the sort of plot produced in the first part of this homework to compare two countries, I'm not sure this table will help. I would still prefer a "wide" table vs a "long" one for visual comparison of data.
+I also tried the activity #3 but after thinking for a while, I dont see how this new shape of the data will help us to produce a better visualization. As we know, ggplot2 prefer long format, so other than the sort of plot produced in the previous exercise to compare two countries, I'm not sure this table will help. I would still prefer a "wide" table vs a "long" one for visual comparison of data.
 
 ```{r}
 life_exp_mean <- 
@@ -85,3 +57,88 @@ life_exp_mean <-
   spread(continent, life_mean)
 knitr::kable(life_exp_mean)
 ```
+
+# Join, merge, look up
+
+### Activiy #1
+
+**Objective**: Create a second data frame, complementary to Gapminder. Join this with (part of) Gapminder using a dplyr join function and make some observations about the process and result. Explore the different types of joins.
+
+**Process**: Rather than creating a second data frame, I decided to get some open access data from the internet to practice `joins` for this activity. I'm interested in global land use change, so I think it will be perfect if I can add a new variable for agricultural land area per year for each country. 
+I googled and found open access data for Agricultural land (sq. km) for all countries in the world from [The World Bank](http://www.worldbank.org) official webpage for years between 1961-2014. The data can be downloaded as `.csv` file from [this site](https://data.worldbank.org/indicator/AG.LND.AGRI.K2?end=2016&start=1961&view=chart), and because the license says "open", I'm assuming it is okay to use it here as an example (not 100% sure). 
+
+There might be different country names between databases and thera are also more years for the second database. So the challenge, is to use a `join` to extract data for agricultural land per country for the years with data in gapminder, and add a new column with those data to gapminder.
+
+Loading the data
+```{r}
+agrland <- read.csv("agri_data.csv") #load second database
+str(agrland) #check structure
+```
+
+So, from this database we only need country names, years and agricultural land. I have to get a subset of data and reshape the years in a long format. Also I have to rename `year`, since originally the names for columns were not valid and now they all have an `X` before year. **note**: If you know how to do it using `mutate` please let me know... I had to use a different library `stringr` and `str_replace` following [this](https://stackoverflow.com/questions/9704213/r-remove-part-of-string) post
+
+```{r}
+agrland2 <- agrland %>%
+  select(Country.Name, X1961:X2014) %>% 
+  gather(key = "year", value = "agri_land", X1961:X2014) %>% 
+  rename(country = Country.Name)
+
+library("stringr") # load library and fix names
+agrland2$year <- str_replace(agrland2$year, "[X]","")
+```
+
+Now we can double check that both databases match in the variables of interest `year` and `country` to do the join.
+
+```{r}
+head(gapminder)
+head(agrland2)
+```
+
+**Finally, I can explore joins** 
+
+I want to keep all gapminder information and add new column with agricultural land values, but only for countries and years in gapminder.
+
+```{r eval=FALSE, include=FALSE}
+gapminder %>% 
+  left_join(agrland2)
+```
+
+First try gives error, because incompatible types in `year`. Which makes sense, because `year` in my second database was read as an object of the type character. So, I have to make them the same type...
+
+
+```{r}
+agrland2$year <- as.integer(agrland2$year)
+```
+
+Again!
+
+```{r}
+gapminder %>% 
+  left_join(agrland2) %>% 
+  head(20) %>% 
+  knitr::kable(format = "markdown")
+```
+
+**Observations**: This Join seems to work, since we are preserving all rows from gapminder, matching with country and year, and adding the new column from agricultural land. However, there are some NA's for years in gapminder without info for agricultural land, so I will try another join.
+
+```{r}
+gapminder %>% 
+  inner_join(agrland2) %>% 
+  head(20) %>% 
+  knitr::kable(format = "markdown")
+```
+
+**Observations**: This join gives a better combined dataset, since its giving me all countries with values for agricultural land in the second database (so avoiding NA's). This one would be useful for summarizing or visualizing with the new variable. 
+
+I also want to see whether there are countries in gapminder without information in the second database. So, I will use a filtering join:
+
+```{r}
+gap2 <- gapminder %>% 
+  anti_join(agrland2, by = "country") #create an object and search for unique values
+unique(gap2$country) %>%  
+  knitr::kable(format = "markdown")
+```
+
+**Observations**: The `anti_join` shows me that apparently there are no data for 9 countries in the second database, but I suspect there are name issues, such as different names for the same country between databases... For the purposes of this homework, I will not go into fix that... but I demonstrate the use of this type of join to identify differences between databases.
+
+I dont really need a `full_join` or `semi_join` in this example... or joins from the second database to gapminder, since there are so much information in that second database and the outputs will just be super messy.
