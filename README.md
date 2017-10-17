@@ -5,6 +5,8 @@ My name is **Santiago David**, and I'm a PhD student in the [Jankowski Lab](http
 
 Please follow the links to specific homework!
 
+- [**Homework 05**](https://github.com/santiagodr/STAT545_hw_David_Santiago/tree/master/hw05) Due Oct 20, 2017 (in process)
+
 - [**Homework 04**](https://github.com/santiagodr/STAT545_hw_David_Santiago/tree/master/hw04) Due Oct 11, 2017
 
 - [**Homework 03**](https://github.com/santiagodr/STAT545_hw_David_Santiago/tree/master/hw03) Due Oct 03, 2017
