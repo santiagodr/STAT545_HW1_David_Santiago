@@ -1,0 +1,24 @@
+---
+title: "Factor and Figure management"
+author: "Santiago David"
+date: '2017-10-20'
+output: github_document
+---
+
+#### Load data and packages
+```{r}
+suppressPackageStartupMessages(library(tidyverse))
+suppressPackageStartupMessages(library(gapminder))
+```
+
+# Factor management
+
+# File I/O
+
+# Visualization design
+
+# Writing figures to file
+
+# Clean up your repo!
+
+
