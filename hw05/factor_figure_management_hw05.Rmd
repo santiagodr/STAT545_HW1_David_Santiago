@@ -54,7 +54,7 @@ singer_forcats <- singer_locations %>%
         year = as.character(year),
         year = as_factor(year), 
         city = ifelse(is.na(city), "missing", city),
-        city = as_factor(city), ifelse(is.na(city), "missing", city))
+        city = as_factor(city))
 
 glimpse(singer_forcats)
 ```
