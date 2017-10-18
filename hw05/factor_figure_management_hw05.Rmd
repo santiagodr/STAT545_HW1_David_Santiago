@@ -17,11 +17,10 @@ data("singer_locations")
 
 ### Singer version
 
-**Objective 1 Factorise**: Transform some of the variable in the singer_locations dataframe into factors: pay attention at what levels you introduce and their order. Try and consider the difference between the base R as.factor and the forcats-provided functions
+####**Objective 1 Factorise**: Transform some of the variable in the singer_locations dataframe into factors: pay attention at what levels you introduce and their order. Try and consider the difference between the base R as.factor and the forcats-provided functions
 
-**Process**:
+**Process**: We can start checking at the type of variables in `singer_locations`, and confirm that they are not `factors`
 
-We can start checking at the type of variables in `singer_locations`, and confirm that they are not `factors`
 ```{r}
 glimpse(singer_locations)
 ```
@@ -44,7 +43,7 @@ Or we can also use `as_factor` from the package [forcats](https://www.rdocumenta
 singer_forcats <- singer_locations %>% 
   mutate(artist_name = as_factor(artist_name),
         year = as_factor(year), 
-        city = as_factor(city))
+        city = as_factor(city))   #gives error
 ```
 However, there are two problems here, the first one is that `year` is an integer in the original database and can't be converted to factor using `as_factor`, and also `city` have NA's, which is giving an error. The solution I considered was to convert year from integer to character first, and then to factor using `as_factor`. Also, we have to specify an entry value for the missing information in city...
 
@@ -59,13 +58,53 @@ singer_forcats <- singer_locations %>%
 glimpse(singer_forcats)
 ```
 
-Now, we can see that all three variables are of the type factor, we can also see the difference in the variable city with the two methods, since we assigned a new level called "missing" for the NA's, the second example now includes 1317 levels instead of 1316
+Now, we can see that all three variables are of the type factor, we can also see the difference in the variable `city` between the two methods, since we assigned a new level called "missing" for the NA's, the second example now includes 1317 levels instead of 1316 for the same variable.
 
 ```{r}
-length(levels(singer_fact$city))
-length(levels(singer_forcats$city))
+nlevels(singer_fact$city)
+nlevels(singer_forcats$city)
 ```
 
+####**Objective 2 Drop 0**: Filter the singer_locations data to remove observations associated with the uncorrectly inputed year 0. Additionally, remove unused factor levels. Provide concrete information on the data before and after removing these rows and levels; address the number of rows and the levels of the affected factor.
+
+**Process**: We can take advantage of our new database "singer_forcats" with `year` as a factor to try this part. First how many observations were coded as 0, and how many levels do we have in that factor.
+
+```{r}
+singer_forcats %>% 
+  count(year == 0)
+nlevels(singer_forcats$year)
+```
+
+We have 100 entries equal to 0 and 10000 for other years plus 70 levels in `year`, so now, I will filter the data for non-zero observations in `year` and save that as a new database. We can inspect the number of observations and levels on this new database:
+
+```{r}
+singer_dropzero <- singer_forcats %>% 
+  filter(year != "0")
+
+singer_dropzero %>% 
+  count(year != 0)
+nlevels(singer_dropzero$year)
+```
+
+Now, we effectively kept the 10000 observations, but we still have 70 levels!, we need to drop that unused `0` year and other unused levels associated with those observations in `artist_name` and `city`. For this reason it is better to use `droplevels()` from base R.
+
+```{r}
+singer_drop_levels <- singer_dropzero %>% 
+  droplevels()
+```
+
+To understand the effect of removing `year = 0` and `droplevels()`. We can compare the structure of both databases.
+
+```{r}
+# before 
+str(singer_forcats) 
+# after
+str(singer_drop_levels) 
+```
+
+**observations**: We can see now that there are 100 observations less after removing `year = 0`, but also that the number of levels changed from 7498 to 7408 for `artist_name`, from 70 to 69 for `year` and from 1317 to 1309 for `city` after dropping unused levels.
+
+####**Objective 3 Reorder the levels of year, artist_name or title**: Use the forcats package to change the order of the factor levels, based on a principled summary of one of the quantitative variables. Consider experimenting with a summary statistic beyond the most basic choice of the median.
 
 # File I/O
 

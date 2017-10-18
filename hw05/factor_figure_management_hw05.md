@@ -17,11 +17,9 @@ Factor management
 
 ### Singer version
 
-**Objective 1 Factorise**: Transform some of the variable in the singer\_locations dataframe into factors: pay attention at what levels you introduce and their order. Try and consider the difference between the base R as.factor and the forcats-provided functions
+#### **Objective 1 Factorise**: Transform some of the variable in the singer\_locations dataframe into factors: pay attention at what levels you introduce and their order. Try and consider the difference between the base R as.factor and the forcats-provided functions
 
-**Process**:
-
-We can start checking at the type of variables in `singer_locations`, and confirm that they are not `factors`
+**Process**: We can start checking at the type of variables in `singer_locations`, and confirm that they are not `factors`
 
 ``` r
 glimpse(singer_locations)
@@ -78,7 +76,7 @@ Or we can also use `as_factor` from the package [forcats](https://www.rdocumenta
     singer_forcats <- singer_locations %>% 
       mutate(artist_name = as_factor(artist_name),
             year = as_factor(year), 
-            city = as_factor(city))
+            city = as_factor(city))   #gives error
 
 However, there are two problems here, the first one is that `year` is an integer in the original database and can't be converted to factor using `as_factor`, and also `city` have NA's, which is giving an error. The solution I considered was to convert year from integer to character first, and then to factor using `as_factor`. Also, we have to specify an entry value for the missing information in city...
 
@@ -110,19 +108,116 @@ glimpse(singer_forcats)
     ## $ name               <chr> NA, "Gene Chandler", "Paul Horn", NA, "Doro...
     ## $ city               <fctr> missing, Chicago, IL, New York, NY, missin...
 
-Now, we can see that all three variables are of the type factor, we can also see the difference in the variable city with the two methods, since we assigned a new level called "missing" for the NA's, the second example now includes 1317 levels instead of 1316
+Now, we can see that all three variables are of the type factor, we can also see the difference in the variable `city` between the two methods, since we assigned a new level called "missing" for the NA's, the second example now includes 1317 levels instead of 1316 for the same variable.
 
 ``` r
-length(levels(singer_fact$city))
+nlevels(singer_fact$city)
 ```
 
     ## [1] 1316
 
 ``` r
-length(levels(singer_forcats$city))
+nlevels(singer_forcats$city)
 ```
 
     ## [1] 1317
+
+#### **Objective 2 Drop 0**: Filter the singer\_locations data to remove observations associated with the uncorrectly inputed year 0. Additionally, remove unused factor levels. Provide concrete information on the data before and after removing these rows and levels; address the number of rows and the levels of the affected factor.
+
+**Process**: We can take advantage of our new database "singer\_forcats" with `year` as a factor to try this part. First how many observations were coded as 0, and how many levels do we have in that factor.
+
+``` r
+singer_forcats %>% 
+  count(year == 0)
+```
+
+    ## # A tibble: 2 x 2
+    ##   `year == 0`     n
+    ##         <lgl> <int>
+    ## 1       FALSE 10000
+    ## 2        TRUE   100
+
+``` r
+nlevels(singer_forcats$year)
+```
+
+    ## [1] 70
+
+We have 100 entries equal to 0 and 10000 for other years plus 70 levels in `year`, so now, I will filter the data for non-zero observations in `year` and save that as a new database. We can inspect the number of observations and levels on this new database:
+
+``` r
+singer_dropzero <- singer_forcats %>% 
+  filter(year != "0")
+
+singer_dropzero %>% 
+  count(year != 0)
+```
+
+    ## # A tibble: 1 x 2
+    ##   `year != 0`     n
+    ##         <lgl> <int>
+    ## 1        TRUE 10000
+
+``` r
+nlevels(singer_dropzero$year)
+```
+
+    ## [1] 70
+
+Now, we effectively kept the 10000 observations, but we still have 70 levels!, we need to drop that unused `0` year and other unused levels associated with those observations in `artist_name` and `city`. For this reason it is better to use `droplevels()` from base R.
+
+``` r
+singer_drop_levels <- singer_dropzero %>% 
+  droplevels()
+```
+
+To understand the effect of removing `year = 0` and `droplevels()`. We can compare the structure of both databases.
+
+``` r
+# before 
+str(singer_forcats) 
+```
+
+    ## Classes 'tbl_df', 'tbl' and 'data.frame':    10100 obs. of  14 variables:
+    ##  $ track_id          : chr  "TRWICRA128F42368DB" "TRXJANY128F42246FC" "TRIKPCA128F424A553" "TRYEATD128F92F87C9" ...
+    ##  $ title             : chr  "The Conversation (Cd)" "Lonely Island" "Here's That Rainy Day" "Rego Park Blues" ...
+    ##  $ song_id           : chr  "SOSURTI12A81C22FB8" "SODESQP12A6D4F98EF" "SOQUYQD12A8C131619" "SOEZGRC12AB017F1AC" ...
+    ##  $ release           : chr  "Even If It Kills Me" "The Duke Of Earl" "Imprompture" "Still River" ...
+    ##  $ artist_id         : chr  "ARACDPV1187FB58DF4" "ARYBUAO1187FB3F4EB" "AR4111G1187B9B58AB" "ARQDZP31187B98D623" ...
+    ##  $ artist_name       : Factor w/ 7498 levels "Motion City Soundtrack",..: 1 2 3 4 5 6 7 8 9 10 ...
+    ##  $ year              : Factor w/ 70 levels "2007","2004",..: 1 2 3 4 5 6 7 1 8 6 ...
+    ##  $ duration          : num  170 107 528 695 237 ...
+    ##  $ artist_hotttnesss : num  0.641 0.394 0.431 0.362 0.411 ...
+    ##  $ artist_familiarity: num  0.823 0.57 0.504 0.477 0.53 ...
+    ##  $ latitude          : num  NA 41.9 40.7 NA 42.3 ...
+    ##  $ longitude         : num  NA -87.6 -74 NA -83 ...
+    ##  $ name              : chr  NA "Gene Chandler" "Paul Horn" NA ...
+    ##  $ city              : Factor w/ 1317 levels "missing","Chicago, IL",..: 1 2 3 1 4 5 1 1 1 1 ...
+
+``` r
+# after
+str(singer_drop_levels) 
+```
+
+    ## Classes 'tbl_df', 'tbl' and 'data.frame':    10000 obs. of  14 variables:
+    ##  $ track_id          : chr  "TRWICRA128F42368DB" "TRXJANY128F42246FC" "TRIKPCA128F424A553" "TRYEATD128F92F87C9" ...
+    ##  $ title             : chr  "The Conversation (Cd)" "Lonely Island" "Here's That Rainy Day" "Rego Park Blues" ...
+    ##  $ song_id           : chr  "SOSURTI12A81C22FB8" "SODESQP12A6D4F98EF" "SOQUYQD12A8C131619" "SOEZGRC12AB017F1AC" ...
+    ##  $ release           : chr  "Even If It Kills Me" "The Duke Of Earl" "Imprompture" "Still River" ...
+    ##  $ artist_id         : chr  "ARACDPV1187FB58DF4" "ARYBUAO1187FB3F4EB" "AR4111G1187B9B58AB" "ARQDZP31187B98D623" ...
+    ##  $ artist_name       : Factor w/ 7408 levels "Motion City Soundtrack",..: 1 2 3 4 5 6 7 8 9 10 ...
+    ##  $ year              : Factor w/ 69 levels "2007","2004",..: 1 2 3 4 5 6 7 1 8 6 ...
+    ##  $ duration          : num  170 107 528 695 237 ...
+    ##  $ artist_hotttnesss : num  0.641 0.394 0.431 0.362 0.411 ...
+    ##  $ artist_familiarity: num  0.823 0.57 0.504 0.477 0.53 ...
+    ##  $ latitude          : num  NA 41.9 40.7 NA 42.3 ...
+    ##  $ longitude         : num  NA -87.6 -74 NA -83 ...
+    ##  $ name              : chr  NA "Gene Chandler" "Paul Horn" NA ...
+    ##  $ city              : Factor w/ 1309 levels "missing","Chicago, IL",..: 1 2 3 1 4 5 1 1 1 1 ...
+
+**observations**: We can see now that there are 100 observations less after removing `year = 0`, but also that the number of levels changed from 7498 to 7408 for `artist_name`, from 70 to 69 for `year` and from 1317 to 1309 for `city` after dropping unused levels.
+
+#### **Objective 3 Reorder the levels of year, artist\_name or title**: Use the forcats package to change the order of the factor levels, based on a principled summary of one of the quantitative variables. Consider experimenting with a summary statistic beyond the most basic choice of the median.
 
 File I/O
 ========
