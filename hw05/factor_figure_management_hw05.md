@@ -17,7 +17,7 @@ Factor management
 
 ### Singer version
 
-**Objectives**: - Define factor variables - Drop factor/levels - Reorder levels based on knowledge from data
+**Objective 1 Factorise**: Transform some of the variable in the singer\_locations dataframe into factors: pay attention at what levels you introduce and their order. Try and consider the difference between the base R as.factor and the forcats-provided functions
 
 **Process**:
 
@@ -44,16 +44,16 @@ glimpse(singer_locations)
     ## $ name               <chr> NA, "Gene Chandler", "Paul Horn", NA, "Doro...
     ## $ city               <chr> NA, "Chicago, IL", "New York, NY", NA, "Det...
 
-Now, I will save the database in a different object and will mutate `artist_name`, `release`, and `city` from character to factor, but keeping the same variable names...
+Now, I will save the database in a different object and will mutate `artist_name`, `year`, and `city` from character/integer to factor, but keeping the same variable names...
 
-We can do this using Base R `as.factor`.
+We can do this using Base R function `as.factor`.
 
 ``` r
 singer_fact <- singer_locations %>% 
   mutate(artist_name = as.factor(artist_name),
          year = as.factor(year),
          city = as.factor(city))
-glimpse(singer_fact)
+glimpse(singer_fact) # to confirm they are factors now
 ```
 
     ## Observations: 10,100
@@ -80,7 +80,7 @@ Or we can also use `as_factor` from the package [forcats](https://www.rdocumenta
             year = as_factor(year), 
             city = as_factor(city))
 
-However, there are two problems here, the first one is that `year` is an integer in the original database and can't be converted to factor using `as_factor`, and also `city` have NA's, which is giving an error. S, the solution I considered was to convert year from integer to character first, and then to factor using `as_factor`. Also, we have to specify an entry for the missing values...
+However, there are two problems here, the first one is that `year` is an integer in the original database and can't be converted to factor using `as_factor`, and also `city` have NA's, which is giving an error. The solution I considered was to convert year from integer to character first, and then to factor using `as_factor`. Also, we have to specify an entry value for the missing information in city...
 
 ``` r
 singer_forcats <- singer_locations %>% 
@@ -111,7 +111,19 @@ glimpse(singer_forcats)
     ## $ city                                 <fctr> missing, Chicago, IL, Ne...
     ## $ ifelse(is.na(city), "missing", city) <int> 1, 2, 3, 1, 4, 5, 1, 1, 1...
 
-Now, we can see that all three variables are of the type factor
+Now, we can see that all three variables are of the type factor, we can also see the difference in the variable city with the two methods, since we assigned a new level called "missing" for the NA's, the second example now includes 1317 levels instead of 1316
+
+``` r
+length(levels(singer_fact$city))
+```
+
+    ## [1] 1316
+
+``` r
+length(levels(singer_forcats$city))
+```
+
+    ## [1] 1317
 
 File I/O
 ========
