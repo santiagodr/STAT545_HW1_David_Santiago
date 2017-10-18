@@ -8,10 +8,64 @@ output: github_document
 #### Load data and packages
 ```{r}
 suppressPackageStartupMessages(library(tidyverse))
-suppressPackageStartupMessages(library(gapminder))
+suppressPackageStartupMessages(library(singer))
+suppressPackageStartupMessages(library(forcats))
+data("singer_locations")
 ```
 
 # Factor management
+
+### Singer version
+
+**Objective 1 Factorise**: Transform some of the variable in the singer_locations dataframe into factors: pay attention at what levels you introduce and their order. Try and consider the difference between the base R as.factor and the forcats-provided functions
+
+**Process**:
+
+We can start checking at the type of variables in `singer_locations`, and confirm that they are not `factors`
+```{r}
+glimpse(singer_locations)
+```
+
+Now, I will save the database in a different object and will mutate `artist_name`, `year`, and `city` from character/integer to factor, but keeping the same variable names...
+
+We can do this using Base R function `as.factor`. 
+
+```{r}
+singer_fact <- singer_locations %>% 
+  mutate(artist_name = as.factor(artist_name),
+         year = as.factor(year),
+         city = as.factor(city))
+glimpse(singer_fact) # to confirm they are factors now
+```
+
+Or we can also use `as_factor` from the package [forcats](https://www.rdocumentation.org/packages/forcats/versions/0.2.0). 
+
+```
+singer_forcats <- singer_locations %>% 
+  mutate(artist_name = as_factor(artist_name),
+        year = as_factor(year), 
+        city = as_factor(city))
+```
+However, there are two problems here, the first one is that `year` is an integer in the original database and can't be converted to factor using `as_factor`, and also `city` have NA's, which is giving an error. The solution I considered was to convert year from integer to character first, and then to factor using `as_factor`. Also, we have to specify an entry value for the missing information in city...
+
+```{r}
+singer_forcats <- singer_locations %>% 
+  mutate(artist_name = as_factor(artist_name),
+        year = as.character(year),
+        year = as_factor(year), 
+        city = ifelse(is.na(city), "missing", city),
+        city = as_factor(city), ifelse(is.na(city), "missing", city))
+
+glimpse(singer_forcats)
+```
+
+Now, we can see that all three variables are of the type factor, we can also see the difference in the variable city with the two methods, since we assigned a new level called "missing" for the NA's, the second example now includes 1317 levels instead of 1316
+
+```{r}
+length(levels(singer_fact$city))
+length(levels(singer_forcats$city))
+```
+
 
 # File I/O
 
