@@ -17,7 +17,9 @@ Factor management
 
 ### Singer version
 
-#### **Objective 1 Factorise**: Transform some of the variable in the singer\_locations dataframe into factors: pay attention at what levels you introduce and their order. Try and consider the difference between the base R as.factor and the forcats-provided functions
+#### **Objective 1 Factorise**:
+
+Transform some of the variable in the singer\_locations dataframe into factors: pay attention at what levels you introduce and their order. Try and consider the difference between the base R as.factor and the forcats-provided functions
 
 **Process**: We can start checking at the type of variables in `singer_locations`, and confirm that they are not `factors`
 
@@ -78,7 +80,7 @@ Or we can also use `as_factor` from the package [forcats](https://www.rdocumenta
             year = as_factor(year), 
             city = as_factor(city))   #gives error
 
-However, there are two problems here, the first one is that `year` is an integer in the original database and can't be converted to factor using `as_factor`, and also `city` have NA's, which is giving an error. The solution I considered was to convert year from integer to character first, and then to factor using `as_factor`. Also, we have to specify an entry value for the missing information in city...
+However, there are two problems here, the first one is that `year` is an integer in the original database and can't be converted to factor using `as_factor`, and also `city` have NA's, which is giving an error. The solution I considered was to convert year from integer to character first, and then to factor using `as_factor`. Also, we have to specify an entry value for the missing information in city (we explored this in class)...
 
 ``` r
 singer_forcats <- singer_locations %>% 
@@ -122,7 +124,9 @@ nlevels(singer_forcats$city)
 
     ## [1] 1317
 
-#### **Objective 2 Drop 0**: Filter the singer\_locations data to remove observations associated with the uncorrectly inputed year 0. Additionally, remove unused factor levels. Provide concrete information on the data before and after removing these rows and levels; address the number of rows and the levels of the affected factor.
+#### **Objective 2 Drop 0**:
+
+Filter the singer\_locations data to remove observations associated with the uncorrectly inputed year 0. Additionally, remove unused factor levels. Provide concrete information on the data before and after removing these rows and levels; address the number of rows and the levels of the affected factor.
 
 **Process**: We can take advantage of our new database "singer\_forcats" with `year` as a factor to try this part. First how many observations were coded as 0, and how many levels do we have in that factor.
 
@@ -217,10 +221,100 @@ str(singer_drop_levels)
 
 **observations**: We can see now that there are 100 observations less after removing `year = 0`, but also that the number of levels changed from 7498 to 7408 for `artist_name`, from 70 to 69 for `year` and from 1317 to 1309 for `city` after dropping unused levels.
 
-#### **Objective 3 Reorder the levels of year, artist\_name or title**: Use the forcats package to change the order of the factor levels, based on a principled summary of one of the quantitative variables. Consider experimenting with a summary statistic beyond the most basic choice of the median.
+#### **Objective 3 Reorder the levels of year, artist\_name or title**:
+
+Use the forcats package to change the order of the factor levels, based on a principled summary of one of the quantitative variables. Consider experimenting with a summary statistic beyond the most basic choice of the median.
+
+**Process**: Since I have been working with `year` and `artist_name` but not `title`. I will only work with the first two in this section. I have the vague impression that songs were longer between 50's-80's than they are in recent years 90's-00's. So, I will focus in the variable `duration` and specifically in the `mean` duration for all songs per year and `max` duration for each artist.
+
+``` r
+fct_reorder(singer_drop_levels$year,
+            singer_drop_levels$duration, fun = mean, .desc = TRUE) %>% 
+  levels() %>% 
+  head(10)
+```
+
+    ##  [1] "1972" "1973" "1976" "1970" "1979" "2001" "1984" "1985" "2000" "1998"
+
+**observation**: I was wrong!, apparently songs were the longest in the 70's, but then also in 2001, 2000 relatively to other years.
+
+We can also explore, which are the artists with the longest songs on average.
+
+``` r
+fct_reorder(singer_drop_levels$artist_name,
+            singer_drop_levels$duration, fun = max, .desc = TRUE) %>% 
+  levels() %>% 
+  head(10)
+```
+
+    ##  [1] "Emerson_ Lake & Palmer" "Lard"                  
+    ##  [3] "Tiny Vipers"            "Takagi Masakatsu"      
+    ##  [5] "Archie Shepp"           "Home Grown"            
+    ##  [7] "Pygmy Lush"             "Bill Laswell"          
+    ##  [9] "Henry Rollins"          "Deep Purple"
+
+**Observations**: Don't know most of these artists, but they have at least one super long song
+
+#### **Extra Objectives (Common part)**:
+
+-   Explore the effects of arrange(). Does merely arranging the data have any effect on, say, a figure?
+-   Explore the effects of reordering a factor and factor reordering coupled with arrange(). Especially, what effect does this have on a figure?
+
+**Process**: We can use the previous examples. First for average song `duration` and `year`. We start by creating a subset of this data. Only for 20 years, so that we can easily see the effect in figures...
+
+``` r
+singer_subset <- singer_drop_levels %>% 
+  group_by(year) %>% 
+  summarise(mean_duration = mean(duration)) %>% 
+  head(20)
+```
+
+We can use `arrange()` on the factor `year` and check if there is any effect in the plot.
+
+``` r
+arrange(singer_subset, mean_duration) %>% 
+  ggplot(aes(mean_duration, year)) +
+  geom_point() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+```
+
+![](factor_figure_management_hw05_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-13-1.png)
+
+**Observations**: In the previous plot we can see that although we used `arrange()` to sort `mean_duration` by year in descending order, R still keeps the arbitrary order of levels, so that the trend is not really evident.
+
+Now we can try reordering the factor with `fct_reorder` and do the same plot.
+
+``` r
+ggplot(singer_subset, (aes(x = mean_duration, y = fct_reorder(year, mean_duration)))) +
+  geom_point() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+```
+
+![](factor_figure_management_hw05_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-14-1.png)
+
+**Observations**: Now, in this plot we can clearly see which years have on average a long song duration, and which ones a shorter one, since they are reorder based on the quantitative variable.
+
+Also, If we use `arrange()` and `fct_reorder`, we have the same effect than just using `fct_reorder`
+
+``` r
+arrange(singer_subset, mean_duration) %>% 
+ggplot(aes(x = mean_duration, y = fct_reorder(year, mean_duration))) +
+  geom_point() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+```
+
+![](factor_figure_management_hw05_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-15-1.png)
 
 File I/O
 ========
+
+**Objective**:
+
+-   Experiment with one or more of `write_csv()/read_csv()`, `saveRDS()/readRDS()`
+-   Create something new, probably by filtering or grouped-summarization of Singer or Gapminder
+-   Fiddle with factor levels, and Explore whether this survives the round trip of writing to file then reading back in.
+
+**Process**: I start by creating a new summary from `singer` to write in and out.
 
 Visualization design
 ====================
