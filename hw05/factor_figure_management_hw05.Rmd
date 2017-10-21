@@ -185,10 +185,72 @@ ggplot(aes(x = mean_duration, y = fct_reorder(year, mean_duration))) +
 - Create something new, probably by filtering or grouped-summarization of Singer or Gapminder
 - Fiddle with factor levels, and Explore whether this survives the round trip of writing to file then reading back in.
 
-**Process**: I start by creating a new summary from `singer` to write in and out. 
+**Process**: I start by creating a new summary from `singer` to write in and out in this part of the homework. I don't remember what `artist_hotttnesss` mean, but I guess it is some sort of popularity measurement, so let's try to get then mean `artist_hotttnesss` across years for each artist. I will use `singer_forcats`, since I already coded artist_name and year as factors in that database.
 
+```{r}
+artist_hotness <- singer_forcats %>% 
+  group_by(artist_name) %>% 
+  summarise(mean_hotness = mean(artist_hotttnesss))
+str(artist_hotness)
+head(artist_hotness)
+```
+
+I will use `write_csv` and `read_csv` to get this subset of data in and out of r...
+```{r}
+write_csv(artist_hotness, "artist_hotness.csv")
+
+# now read them back
+artist_hotness <- read_csv("artist_hotness.csv") %>% 
+  mutate(artist_name = as_factor(artist_name)) # creating factor
+glimpse(artist_hotness)
+```
+
+The file was indeed exported and imported without major issues. However, `artist_name` was imported as a character variable instead of a factor... Let's mutate that again, and check the order of levels in this file
+
+```{r}
+head(levels(artist_hotness$artist_name))
+```
+
+This order doesn't seem to follow any particular rule, it is just the first artist names entered in the original database. I will reorder the `artist_name` factor levels according to mean hotness in decreasing order.
+
+```{r}
+artist_hotness <- artist_hotness %>% 
+  mutate(artist_name = fct_reorder(artist_name, mean_hotness, .desc = TRUE))
+head(levels(artist_hotness$artist_name))
+```
+
+Alrigth, so now we know that Daft Punk, Black Eyes Peas, and Coldplay, are the artists with the highest mean hotness index, and also our levels are organized that way... I will export this again using `write_csv` and `saveRDS()` and read them back...
+
+```{r}
+write_csv(artist_hotness, "artist_hotness.csv")
+saveRDS(artist_hotness, "artist_hotness.rds")
+
+# Now read them back
+artist_via_csv <- read_csv("artist_hotness.csv") %>% 
+  mutate(artist_name = as_factor(artist_name)) # with factor
+artist_via_rds <- readRDS("artist_hotness.rds")
+```
+
+Lets take a look again at the order of levels for these two files
+
+```{r}
+head(levels(artist_via_csv$artist_name))
+head(levels(artist_via_rds$artist_name))
+```
+
+**Observations**: The first route, using `write_csv` and `read_csv` didn't conserve the reorder we computed based on mean hotness, but the second option using `saveRDS()` and `readRDS()` did it. I had to read and google what the .rds file was, since I have never use it. I also got a lot of help from the materials of this class for last year.
 
 # Visualization design
+
+**Objective**: 
+
+Remake at least one figure or create a new one, in light of something you learned in the recent class meetings about visualization design and color. Maybe juxtapose your first attempt and what you obtained after some time spent working on it. Reflect on the differences.
+
+```{r}
+
+```
+
+
 
 # Writing figures to file
 
