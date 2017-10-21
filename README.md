@@ -5,12 +5,12 @@ My name is **Santiago David**, and I'm a PhD student in the [Jankowski Lab](http
 
 Please follow the links to specific homework!
 
-- [**Homework 05**](https://github.com/santiagodr/STAT545_hw_David_Santiago/tree/master/hw05) Due Oct 20, 2017 (in process)
+- [**Homework 05**](https://github.com/santiagodr/STAT545_hw_David_Santiago/tree/master/hw05) Due Oct 20, 2017 factors/write_csv/ggsave
 
-- [**Homework 04**](https://github.com/santiagodr/STAT545_hw_David_Santiago/tree/master/hw04) Due Oct 11, 2017
+- [**Homework 04**](https://github.com/santiagodr/STAT545_hw_David_Santiago/tree/master/hw04) Due Oct 11, 2017 tidyr/joins
 
-- [**Homework 03**](https://github.com/santiagodr/STAT545_hw_David_Santiago/tree/master/hw03) Due Oct 03, 2017
+- [**Homework 03**](https://github.com/santiagodr/STAT545_hw_David_Santiago/tree/master/hw03) Due Oct 03, 2017 ggplot/dplyr
 
-- [**Homework 02**](https://github.com/santiagodr/STAT545_hw_David_Santiago/tree/master/hw02) Due Sept 26, 2017
+- [**Homework 02**](https://github.com/santiagodr/STAT545_hw_David_Santiago/tree/master/hw02) Due Sept 26, 2017 ggplot/dplyr
 
-- [**Homework 01**](https://github.com/santiagodr/STAT545_hw_David_Santiago/tree/master/hw01) Due Sept 19, 2017
+- [**Homework 01**](https://github.com/santiagodr/STAT545_hw_David_Santiago/tree/master/hw01) Due Sept 19, 2017 github/baseR
