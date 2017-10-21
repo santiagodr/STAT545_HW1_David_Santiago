@@ -4,6 +4,10 @@ Santiago David
 2017-10-20
 
 -   [Factor management](#factor-management)
+-   [File I/O](#file-io)
+-   [Visualization design](#visualization-design)
+-   [Writing figures to file](#writing-figures-to-file)
+-   [Clean up your repo!](#clean-up-your-repo)
 
 #### Load data and packages
 
