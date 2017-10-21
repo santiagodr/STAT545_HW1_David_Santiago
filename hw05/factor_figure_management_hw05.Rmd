@@ -166,7 +166,7 @@ ggplot(singer_subset, (aes(x = mean_duration, y = fct_reorder(year, mean_duratio
   theme(axis.text.x = element_text(angle = 90, hjust = 1))
 ```
 
-**Observations**: Now, in this plot we can clearly see which years have on average a long song duration, and which ones a shorter one, since they are reorder based on the quantitative variable.
+**Observations**: Now, in this plot we can clearly see which years have on average a long song duration, and which ones a shorter one, since they are reorder based on the quantitative variable.  Note: I didn't put that much effort in graphs customization, since that's not the objective here...
 
 Also, If we use `arrange()` and `fct_reorder`, we have the same effect than just using `fct_reorder`
 
@@ -242,12 +242,15 @@ head(levels(artist_via_rds$artist_name))
 
 # Visualization design
 
-**Objective**: 
+**Objective**: Remake at least one figure or create a new one, in light of something you learned in the recent class meetings about visualization design and color. Maybe juxtapose your first attempt and what you obtained after some time spent working on it. Reflect on the differences.
 
-Remake at least one figure or create a new one, in light of something you learned in the recent class meetings about visualization design and color. Maybe juxtapose your first attempt and what you obtained after some time spent working on it. Reflect on the differences.
+*Process**: working...
 
 ```{r}
-
+singer_forcats %>% 
+  group_by(year) %>% 
+  summarise(mean_duration = mean(duration),
+            mean_hotness = mean(artist_hotttnesss))
 ```
 
 

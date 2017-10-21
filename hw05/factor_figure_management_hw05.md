@@ -292,7 +292,7 @@ ggplot(singer_subset, (aes(x = mean_duration, y = fct_reorder(year, mean_duratio
 
 ![](factor_figure_management_hw05_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-14-1.png)
 
-**Observations**: Now, in this plot we can clearly see which years have on average a long song duration, and which ones a shorter one, since they are reorder based on the quantitative variable.
+**Observations**: Now, in this plot we can clearly see which years have on average a long song duration, and which ones a shorter one, since they are reorder based on the quantitative variable. Note: I didn't put that much effort in graphs customization, since that's not the objective here...
 
 Also, If we use `arrange()` and `fct_reorder`, we have the same effect than just using `fct_reorder`
 
@@ -314,10 +314,147 @@ File I/O
 -   Create something new, probably by filtering or grouped-summarization of Singer or Gapminder
 -   Fiddle with factor levels, and Explore whether this survives the round trip of writing to file then reading back in.
 
-**Process**: I start by creating a new summary from `singer` to write in and out.
+**Process**: I start by creating a new summary from `singer` to write in and out in this part of the homework. I don't remember what `artist_hotttnesss` mean, but I guess it is some sort of popularity measurement, so let's try to get then mean `artist_hotttnesss` across years for each artist. I will use `singer_forcats`, since I already coded artist\_name and year as factors in that database.
+
+``` r
+artist_hotness <- singer_forcats %>% 
+  group_by(artist_name) %>% 
+  summarise(mean_hotness = mean(artist_hotttnesss))
+str(artist_hotness)
+```
+
+    ## Classes 'tbl_df', 'tbl' and 'data.frame':    7498 obs. of  2 variables:
+    ##  $ artist_name : Factor w/ 7498 levels "Motion City Soundtrack",..: 1 2 3 4 5 6 7 8 9 10 ...
+    ##  $ mean_hotness: num  0.641 0.394 0.431 0.362 0.411 ...
+
+``` r
+head(artist_hotness)
+```
+
+    ## # A tibble: 6 x 2
+    ##                      artist_name mean_hotness
+    ##                           <fctr>        <dbl>
+    ## 1         Motion City Soundtrack    0.6410183
+    ## 2                  Gene Chandler    0.3937627
+    ## 3                      Paul Horn    0.4306226
+    ## 4 Ronnie Earl & the Broadcasters    0.3622792
+    ## 5                  Dorothy Ashby    0.4107520
+    ## 6                    Barleyjuice    0.3762635
+
+I will use `write_csv` and `read_csv` to get this subset of data in and out of r...
+
+``` r
+write_csv(artist_hotness, "artist_hotness.csv")
+
+# now read them back
+artist_hotness <- read_csv("artist_hotness.csv") %>% 
+  mutate(artist_name = as_factor(artist_name)) # creating factor
+```
+
+    ## Parsed with column specification:
+    ## cols(
+    ##   artist_name = col_character(),
+    ##   mean_hotness = col_double()
+    ## )
+
+``` r
+glimpse(artist_hotness)
+```
+
+    ## Observations: 7,498
+    ## Variables: 2
+    ## $ artist_name  <fctr> Motion City Soundtrack, Gene Chandler, Paul Horn...
+    ## $ mean_hotness <dbl> 0.6410183, 0.3937627, 0.4306226, 0.3622792, 0.410...
+
+The file was indeed exported and imported without major issues. However, `artist_name` was imported as a character variable instead of a factor... Let's mutate that again, and check the order of levels in this file
+
+``` r
+head(levels(artist_hotness$artist_name))
+```
+
+    ## [1] "Motion City Soundtrack"         "Gene Chandler"                 
+    ## [3] "Paul Horn"                      "Ronnie Earl & the Broadcasters"
+    ## [5] "Dorothy Ashby"                  "Barleyjuice"
+
+This order doesn't seem to follow any particular rule, it is just the first artist names entered in the original database. I will reorder the `artist_name` factor levels according to mean hotness in decreasing order.
+
+``` r
+artist_hotness <- artist_hotness %>% 
+  mutate(artist_name = fct_reorder(artist_name, mean_hotness, .desc = TRUE))
+head(levels(artist_hotness$artist_name))
+```
+
+    ## [1] "Daft Punk"       "Black Eyed Peas" "Coldplay"        "Rihanna"        
+    ## [5] "Rihanna / Slash" "T.I."
+
+Alrigth, so now we know that Daft Punk, Black Eyes Peas, and Coldplay, are the artists with the highest mean hotness index, and also our levels are organized that way... I will export this again using `write_csv` and `saveRDS()` and read them back...
+
+``` r
+write_csv(artist_hotness, "artist_hotness.csv")
+saveRDS(artist_hotness, "artist_hotness.rds")
+
+# Now read them back
+artist_via_csv <- read_csv("artist_hotness.csv") %>% 
+  mutate(artist_name = as_factor(artist_name)) # with factor
+```
+
+    ## Parsed with column specification:
+    ## cols(
+    ##   artist_name = col_character(),
+    ##   mean_hotness = col_double()
+    ## )
+
+``` r
+artist_via_rds <- readRDS("artist_hotness.rds")
+```
+
+Lets take a look again at the order of levels for these two files
+
+``` r
+head(levels(artist_via_csv$artist_name))
+```
+
+    ## [1] "Motion City Soundtrack"         "Gene Chandler"                 
+    ## [3] "Paul Horn"                      "Ronnie Earl & the Broadcasters"
+    ## [5] "Dorothy Ashby"                  "Barleyjuice"
+
+``` r
+head(levels(artist_via_rds$artist_name))
+```
+
+    ## [1] "Daft Punk"       "Black Eyed Peas" "Coldplay"        "Rihanna"        
+    ## [5] "Rihanna / Slash" "T.I."
+
+**Observations**: The first route, using `write_csv` and `read_csv` didn't conserve the reorder we computed based on mean hotness, but the second option using `saveRDS()` and `readRDS()` did it. I had to read and google what the .rds file was, since I have never use it. I also got a lot of help from the materials of this class for last year.
 
 Visualization design
 ====================
+
+**Objective**: Remake at least one figure or create a new one, in light of something you learned in the recent class meetings about visualization design and color. Maybe juxtapose your first attempt and what you obtained after some time spent working on it. Reflect on the differences.
+
+\*Process\*\*: working...
+
+``` r
+singer_forcats %>% 
+  group_by(year) %>% 
+  summarise(mean_duration = mean(duration),
+            mean_hotness = mean(artist_hotttnesss))
+```
+
+    ## # A tibble: 70 x 3
+    ##      year mean_duration mean_hotness
+    ##    <fctr>         <dbl>        <dbl>
+    ##  1   2007      254.8794    0.4177400
+    ##  2   2004      239.3157    0.4171090
+    ##  3   1998      260.0710    0.4095104
+    ##  4   1995      243.3836    0.4068184
+    ##  5   1968      186.0353    0.4303272
+    ##  6   2006      246.5558    0.4083919
+    ##  7   2003      243.3904    0.4201097
+    ##  8   1966      169.1816    0.4237375
+    ##  9   1989      257.2638    0.4119238
+    ## 10   2008      258.8586    0.4253368
+    ## # ... with 60 more rows
 
 Writing figures to file
 =======================
