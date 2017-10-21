@@ -9,6 +9,7 @@ Santiago David
 suppressPackageStartupMessages(library(tidyverse))
 suppressPackageStartupMessages(library(singer))
 suppressPackageStartupMessages(library(forcats))
+suppressPackageStartupMessages(library(viridis))
 data("singer_locations")
 ```
 
@@ -16,6 +17,8 @@ Factor management
 =================
 
 ### Singer version
+
+I chose this one because I love music from most decades... and we already played a lot with gapminder...
 
 #### **Objective 1 Factorise**:
 
@@ -274,8 +277,7 @@ We can use `arrange()` on the factor `year` and check if there is any effect in 
 ``` r
 arrange(singer_subset, mean_duration) %>% 
   ggplot(aes(mean_duration, year)) +
-  geom_point() +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+  geom_point() 
 ```
 
 ![](factor_figure_management_hw05_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-13-1.png)
@@ -286,8 +288,7 @@ Now we can try reordering the factor with `fct_reorder` and do the same plot.
 
 ``` r
 ggplot(singer_subset, (aes(x = mean_duration, y = fct_reorder(year, mean_duration)))) +
-  geom_point() +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+  geom_point()
 ```
 
 ![](factor_figure_management_hw05_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-14-1.png)
@@ -299,8 +300,7 @@ Also, If we use `arrange()` and `fct_reorder`, we have the same effect than just
 ``` r
 arrange(singer_subset, mean_duration) %>% 
 ggplot(aes(x = mean_duration, y = fct_reorder(year, mean_duration))) +
-  geom_point() +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+  geom_point() 
 ```
 
 ![](factor_figure_management_hw05_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-15-1.png)
@@ -328,18 +328,17 @@ str(artist_hotness)
     ##  $ mean_hotness: num  0.641 0.394 0.431 0.362 0.411 ...
 
 ``` r
-head(artist_hotness)
+knitr::kable(head(artist_hotness))
 ```
 
-    ## # A tibble: 6 x 2
-    ##                      artist_name mean_hotness
-    ##                           <fctr>        <dbl>
-    ## 1         Motion City Soundtrack    0.6410183
-    ## 2                  Gene Chandler    0.3937627
-    ## 3                      Paul Horn    0.4306226
-    ## 4 Ronnie Earl & the Broadcasters    0.3622792
-    ## 5                  Dorothy Ashby    0.4107520
-    ## 6                    Barleyjuice    0.3762635
+| artist\_name                   |  mean\_hotness|
+|:-------------------------------|--------------:|
+| Motion City Soundtrack         |      0.6410183|
+| Gene Chandler                  |      0.3937627|
+| Paul Horn                      |      0.4306226|
+| Ronnie Earl & the Broadcasters |      0.3622792|
+| Dorothy Ashby                  |      0.4107520|
+| Barleyjuice                    |      0.3762635|
 
 I will use `write_csv` and `read_csv` to get this subset of data in and out of r...
 
@@ -432,29 +431,50 @@ Visualization design
 
 **Objective**: Remake at least one figure or create a new one, in light of something you learned in the recent class meetings about visualization design and color. Maybe juxtapose your first attempt and what you obtained after some time spent working on it. Reflect on the differences.
 
-\*Process\*\*: working...
+\*Process\*\*: I would like to have a plot to visualize whether mean `artist_hotttnesss` have changed across years for all artists, and if it is related to song duration. I know it is a silly question, but again, I have the impression that songs were long in the past and I would guess there are popular artist in every generation, so, that should be more constant... or maybe there is something else...
+
+I start by filtering the data and summarizing averages for the variables of interest per year
 
 ``` r
-singer_forcats %>% 
+means_by_year <- singer_locations %>% 
+  filter(year != 0) %>% 
   group_by(year) %>% 
   summarise(mean_duration = mean(duration),
-            mean_hotness = mean(artist_hotttnesss))
+            mean_hotness = mean(artist_hotttnesss),
+            sample_size = n())
 ```
 
-    ## # A tibble: 70 x 3
-    ##      year mean_duration mean_hotness
-    ##    <fctr>         <dbl>        <dbl>
-    ##  1   2007      254.8794    0.4177400
-    ##  2   2004      239.3157    0.4171090
-    ##  3   1998      260.0710    0.4095104
-    ##  4   1995      243.3836    0.4068184
-    ##  5   1968      186.0353    0.4303272
-    ##  6   2006      246.5558    0.4083919
-    ##  7   2003      243.3904    0.4201097
-    ##  8   1966      169.1816    0.4237375
-    ##  9   1989      257.2638    0.4119238
-    ## 10   2008      258.8586    0.4253368
-    ## # ... with 60 more rows
+Now, I start exploring a first basic plot...
+
+``` r
+fig1_means <- means_by_year %>% 
+  ggplot(aes(year, mean_hotness)) +
+  geom_point(aes(size = mean_duration))
+fig1_means
+```
+
+![](factor_figure_management_hw05_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-23-1.png)
+
+So, this is a simple plot, I'm not accounting for sample size or anything like that, and if we explored the sample size per year, we can see that there are very few songs in the 20's-40's, (I did it, but I'm not showing that table here)... so maybe `artist_hotttnesss` in that period is heavily biased to not too "hot" artists... But, in general terms we can see that average artist "hotness" is very similar between the 60's and 80's, but then fall a bit around 90's-00's... what???, Also there might be some relationship with song duration... but not very clear in this plot.
+
+After Dr. Tamara Munzner talk, I would like to try and play with color and shape! and see if we can do better...
+
+``` r
+fig2_means <- means_by_year %>% 
+  ggplot(aes(year, mean_hotness)) +
+  geom_point(aes(colour = mean_duration, size = sample_size), alpha = 0.8) +
+  scale_size_continuous(range = c(1,10)) +
+  scale_color_gradientn(colours = viridis(7)) +
+  labs(title = "Fig 2. Mean artist hotness per year. 
+       Circles coloured based on mean song duration and size based on number of songs per year", 
+       x = "Year", y = "Mean artist hotness") +
+  theme_bw()
+fig2_means
+```
+
+![](factor_figure_management_hw05_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-24-1.png)
+
+**Observations**: For this second graph I used the `viridis` palette, which is perceptually uniform and allows to identify both extremes of the color gradient easily. Also, I used different sizes to display the number of songs per year. Somehow this is a visually improvement of the first graph. Do you agree?
 
 Writing figures to file
 =======================
