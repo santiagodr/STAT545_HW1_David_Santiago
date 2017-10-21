@@ -449,7 +449,8 @@ Now, I start exploring a first basic plot...
 ``` r
 fig1_means <- means_by_year %>% 
   ggplot(aes(year, mean_hotness)) +
-  geom_point(aes(size = mean_duration))
+  geom_point(aes(size = mean_duration)) +
+  labs(title = "Fig 2. Mean artist hotness per year", x = "Year", y = "Mean artist hotness")
 fig1_means
 ```
 
@@ -478,6 +479,19 @@ fig2_means
 
 Writing figures to file
 =======================
+
+**Objective**: Use ggsave() to explicitly save a plot to file. Then use `![Alt text](/path/to/img.png)` to load and embed it in your report. You can play around with various options
+
+**Process**: I used `ggsave` to save the previous two plots I did, one with a png extension and the other with pdf extension, also changing their sizes a bit. Also I specified the plot object to save...
+
+``` r
+ggsave("figure1.png", plot = fig1_means, width = 6, height = 4)
+ggsave("figure2.pdf", plot = fig2_means, width = 6, height = 6)
+```
+
+Now, I will read back the second plot
+
+\[Figure 2\](
 
 Clean up your repo!
 ===================
