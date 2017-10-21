@@ -491,11 +491,11 @@ Writing figures to file
 **Process**: I used `ggsave` to save the previous two plots I did, one with a png extension and the other with pdf extension, also changing their sizes a bit. Also I specified the plot object to save...
 
 ``` r
-ggsave("figure1.png", plot = fig1_means, width = 6, height = 4)
-ggsave("figure2.pdf", plot = fig2_means, width = 6, height = 6)
+ggsave("figure1.pdf", plot = fig1_means, width = 6, height = 4)
+ggsave("figure2.png", plot = fig2_means, width = 6, height = 6)
 ```
 
-Now, I will read back the second plot ![Figure 2](https://github.com/santiagodr/STAT545_hw_David_Santiago/blob/master/hw05/figure2.pdf)
+Now, I will read back the second plot ![Figure2](figure2.png)
 
 Clean up your repo!
 ===================
