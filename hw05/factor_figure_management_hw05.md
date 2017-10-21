@@ -3,6 +3,8 @@ Factor and Figure management
 Santiago David
 2017-10-20
 
+-   [Factor management](#factor-management)
+
 #### Load data and packages
 
 ``` r
@@ -489,9 +491,9 @@ ggsave("figure1.png", plot = fig1_means, width = 6, height = 4)
 ggsave("figure2.pdf", plot = fig2_means, width = 6, height = 6)
 ```
 
-Now, I will read back the second plot
-
-\[Figure 2\](
+Now, I will read back the second plot ![Figure 2](https://github.com/santiagodr/STAT545_hw_David_Santiago/blob/master/hw05/figure2.pdf)
 
 Clean up your repo!
 ===================
+
+I did most of my repo-cleaning in week 2, when we started acummulating folders and files. The explanation of what I did is in that folder's [README](https://github.com/santiagodr/STAT545_hw_David_Santiago/tree/master/hw02), and hopefully everything looks more or less clean in the main README of my repo as well as in the independent folders for specific assignments!
