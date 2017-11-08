@@ -1,0 +1,16 @@
+---
+title: "Data Wrangling wrap up"
+author: "Santiago David"
+date: '2017-11-07'
+output: github_document
+---
+
+#### Load data and packages
+```{r}
+suppressPackageStartupMessages(library(tidyverse))
+suppressPackageStartupMessages(library(singer))
+suppressPackageStartupMessages(library(forcats))
+suppressPackageStartupMessages(library(purrr))
+suppressPackageStartupMessages(library(stringr))
+```
+

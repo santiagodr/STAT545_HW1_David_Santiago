@@ -2,6 +2,10 @@
 
 ### Activities
 
+All coding, graphs, and materials are in this [md.file](pending)
+
 ### Reporting process
+
+- All this homework was done using R Studio and the usual workflow
 
 ### Additional resources
