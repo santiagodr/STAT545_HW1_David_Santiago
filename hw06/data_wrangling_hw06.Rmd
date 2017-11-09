@@ -34,12 +34,16 @@ ggplot(gapminder, aes(year, lifeExp, colour = continent)) +
   theme_classic() 
 ```
 
-From this graph, we can see that there is an increasing trend of life expectancy over years, However, a priori, we dont really know if the relationship between Life expectancy and year is linear, or cuadratic, or whether a robust regression is more apropiate given the possibility that some values are outliers or influential observations. For example, what about that steep line of points in Europe?, or that odd red dot in Africa in the 90's?. For this reason, it is worth to create functions for different models that we can fit either to each continent, or country or other data.
+From these graphs, we can see that there is an increasing trend of life expectancy over years, However, a priori, we dont really know if the relationship between Life expectancy and year is linear, cuadratic, or whether a robust regression is more apropiate given the possibility that some values are outliers or influential observations. Or if the relationship is different for each country/continent. For example, what about that steep line of points in Europe?, or that odd red dot in Africa in the 90's?. For this reason, it is worth to create functions for different models that we can fit either to each continent, or country or other data.
 
-The ideal function, will be one that takes a variable `life expectancty` and `year` as input, and return coefficients `intercept`, and `slope` and some measure of the , such as 
+The ideal function, will be one that takes a variable `life expectancty` and `year` as input, fit a model, and return the coefficients `intercept`, and `slope` and potentially the R-squared or Residual st error...
+
+We can start by computing the models...
 
 ```{r}
-
+summary(lm(lifeExp ~ I(year - 1952), gapminder))
+summary(lm(lifeExp ~ I(year - 1952) + I((year - 1952)^2), gapminder))
+summary(MASS::rlm(lifeExp ~ I(year - 1952), gapminder))
 ```
 
 
