@@ -20,24 +20,35 @@ data("gapminder")
 
 ####**Objective**: 
 
-Write one (or more) functions that do something useful to pieces of the Gapminder or Singer data. It is logical to think about computing on the mini-data frames corresponding to the data for each specific country, location, year, band, album. Make it something you can’t easily do with built-in functions. Make it something that’s not trivial to do with the simple dplyr verbs.
+Write one (or more) functions that do something useful to pieces of the Gapminder or Singer data. Make it something that’s not trivial to do with the simple dplyr verbs.
 
-**Process**: I decide
-
-Plot the data
-
+**Process**: The homework provide a good starting point with the gapminder data following Jenny's [tutorial](http://stat545.com/block012_function-regress-lifeexp-on-year.html) to create a linear regression of life expectancy on year. However, 
+First things first, let's plot the data!
 
 ```{r}
 ggplot(gapminder, aes(year, lifeExp, colour = continent)) +
   geom_point() +
   facet_wrap(~ continent) +
-  geom_smooth(method = "lm") +
   labs(title = "Life expectancy for each continent 1952-2007", x = "Years", y = "Life Expectancy (years)") +
   guides(colour = FALSE) +
   theme_classic() 
 ```
 
+From this graph, we can see that there is an increasing trend of life expectancy over years, However, a priori, we dont really know if the relationship between Life expectancy and year is linear, or cuadratic, or whether a robust regression is more apropiate given the possibility that some values are outliers or influential observations. For example, what about that steep line of points in Europe?, or that odd red dot in Africa in the 90's?. For this reason, it is worth to create functions for different models that we can fit either to each continent, or country or other data.
+
+The ideal function, will be one that takes a variable `life expectancty` and `year` as input, and return coefficients `intercept`, and `slope` and some measure of the , such as 
+
 ```{r}
-summary(lm(lifeExp ~ I(year - 1952), gapminder))
+
 ```
+
+
+
+```{r}
+
+summary(lm(lifeExp ~ I(year - 1952), gapminder))
+
+
+```
+
 
