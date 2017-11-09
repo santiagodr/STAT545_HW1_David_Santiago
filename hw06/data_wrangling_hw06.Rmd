@@ -13,6 +13,7 @@ suppressPackageStartupMessages(library(singer))
 suppressPackageStartupMessages(library(forcats))
 suppressPackageStartupMessages(library(purrr))
 suppressPackageStartupMessages(library(stringr))
+data("gapminder")
 ```
 
 # Writing functions
@@ -21,4 +22,22 @@ suppressPackageStartupMessages(library(stringr))
 
 Write one (or more) functions that do something useful to pieces of the Gapminder or Singer data. It is logical to think about computing on the mini-data frames corresponding to the data for each specific country, location, year, band, album. Make it something you can’t easily do with built-in functions. Make it something that’s not trivial to do with the simple dplyr verbs.
 
-**Process**: I start
+**Process**: I decide
+
+Plot the data
+
+
+```{r}
+ggplot(gapminder, aes(year, lifeExp, colour = continent)) +
+  geom_point() +
+  facet_wrap(~ continent) +
+  geom_smooth(method = "lm") +
+  labs(title = "Life expectancy for each continent 1952-2007", x = "Years", y = "Life Expectancy (years)") +
+  guides(colour = FALSE) +
+  theme_classic() 
+```
+
+```{r}
+summary(lm(lifeExp ~ I(year - 1952), gapminder))
+```
+

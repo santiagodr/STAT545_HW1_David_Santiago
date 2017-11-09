@@ -9,3 +9,5 @@ All coding, graphs, and materials are in this [md.file](pending)
 - All this homework was done using R Studio and the usual workflow
 
 ### Additional resources
+
+- To understand Robust Regressions, I read [this post](https://stats.idre.ucla.edu/r/dae/robust-regression/) from UCLA
