@@ -37,6 +37,8 @@ From these graphs, we can see that there is an increasing trend of life expectan
 
 The ideal function, will be one that takes a variable `life expectancty` and `year` as input, fit a model, and return the coefficients `intercept`, and `slope` and potentially the R-squared or Residual st error...
 
+**Create some code**
+
 We should start by fitting the models, and check how they behave by extracting the coefficients:
 
 ```{r}
@@ -65,11 +67,25 @@ summary(quadra_mod)$adj.r.squared
 summary(robust_mod)$adj.r.squared
 ```
 
+We see that the robust and quadratic models perform a bit better than the simple linear model. But remember this is for the `whole` data. Now, we want to create a function with that code that we can apply to subsets of the data.
 
-
+**Turn code into a function**
 
 ```{r}
-summary(robust_mod)
+linear_mod <- function(dat, offset = 1952) {
+  model <- lm(lifeExp ~ I(year - offset), dat)
+  intercept <- coef(model)[1]
+  slope <- coef(model)[2]
+  r2 <- summary(model)$adj.r.squared
+  return(c(intercept, slope, r2))
+  #output <- list(intercept = intercept, slope = slope, r2 = r2)
+  #return(output)
+}
+```
+
+Lets apply the first function
+```{r}
+linear_mod(gapminder)
 ```
 
 
