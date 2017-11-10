@@ -12,6 +12,7 @@ suppressPackageStartupMessages(library(gapminder))
 suppressPackageStartupMessages(library(forcats))
 suppressPackageStartupMessages(library(purrr))
 suppressPackageStartupMessages(library(stringr))
+suppressPackageStartupMessages(library(broom))
 data("gapminder")
 ```
 
@@ -46,6 +47,8 @@ We should start by fitting the models, and check how they behave by extracting t
 linear_mod <- lm(lifeExp ~ I(year - 1952), gapminder)
 quadra_mod <- lm(lifeExp ~ I(year - 1952) + I((year - 1952)^2), gapminder)
 robust_mod <- robustbase::lmrob(lifeExp ~ I(year - 1952), gapminder)
+library(robust)
+robust <- robust::lmRob(lifeExp ~ I(year - 1952), gapminder)
 ```
 
 We have to use `I(year - 1952)` instead of just `year` to fix the intercept to life expectancy on year 1952 (following Jenny Bryan's [post](http://stat545.com/block012_function-regress-lifeexp-on-year.html))
@@ -65,6 +68,8 @@ And the R-squared to get a sense of how close the data are to the fitted regress
 summary(linear_mod)$adj.r.squared
 summary(quadra_mod)$adj.r.squared
 summary(robust_mod)$adj.r.squared
+summary(robust_mod)
+summary(robust)
 ```
 
 We see that the robust and quadratic models perform a bit better than the simple linear model. But remember this is for the `whole` data. Now, we want to create a function with that code that we can apply to subsets of the data.
@@ -77,7 +82,9 @@ linear_mod <- function(dat, offset = 1952) {
   intercept <- coef(model)[1]
   slope <- coef(model)[2]
   r2 <- summary(model)$adj.r.squared
-  return(c(intercept, slope, r2))
+  data.frame(intercept, slope, r2) %>% 
+  setNames(c("Intercept", "Slope", "R-squared"))
+  #return(c(intercept, slope, r2))
   #output <- list(intercept = intercept, slope = slope, r2 = r2)
   #return(output)
 }
@@ -88,4 +95,19 @@ Lets apply the first function
 linear_mod(gapminder)
 ```
 
+```{r}
+gapminder %>% 
+  group_by(continent) %>% 
+  do(linear_mod(.))
+```
+
+
+Another option using Broom... Explore later
+
+```{r}
+tidy(linear_mod)
+tidy(quadra_mod)
+glance(quadra_mod)
+tidy(robust_mod)
+```
 
