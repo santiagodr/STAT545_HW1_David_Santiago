@@ -11,3 +11,5 @@ All coding, graphs, and materials are in this [md.file](pending)
 ### Additional resources
 
 - To understand Robust Regressions, I read [this post](https://stats.idre.ucla.edu/r/dae/robust-regression/) from UCLA
+
+- I also read the documentation for `lm` [Fitting linear models](https://www.rdocumentation.org/packages/stats/versions/3.4.1/topics/lm), to understand how to extract specific information from this objects

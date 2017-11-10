@@ -5,6 +5,8 @@ date: '2017-11-07'
 output: github_document
 ---
 
+- [Writing functions](#Writing-functions)
+
 #### Load data and packages
 ```{r}
 suppressPackageStartupMessages(library(tidyverse))
@@ -17,9 +19,7 @@ data("gapminder")
 
 # Writing functions
 
-####**Objective**: 
-
-Write one (or more) functions that do something useful to pieces of the Gapminder or Singer data. Make it something that’s not trivial to do with the simple dplyr verbs.
+**Objective**: Write one (or more) functions that do something useful to pieces of the Gapminder or Singer data. Make it something that’s not trivial to do with the simple dplyr verbs.
 
 **Process**: The homework provide a good starting point with the gapminder data following Jenny's [tutorial](http://stat545.com/block012_function-regress-lifeexp-on-year.html) to create a linear regression of life expectancy on year. However, 
 First things first, let's plot the data!
@@ -37,7 +37,7 @@ From these graphs, we can see that there is an increasing trend of life expectan
 
 The ideal function, will be one that takes a variable `life expectancty` and `year` as input, fit a model, and return the coefficients `intercept`, and `slope` and potentially the `R-squared` as a way to understand how well the model fit the data...
 
-**Create some code**
+####**Create some code**
 
 We should start by fitting the models, and check how they behave by extracting the coefficients:
 
@@ -69,7 +69,7 @@ summary(robust1)$adj.r.squared
 
 Now, we see that the robust and quadratic models perform a bit better than the simple linear model. But remember this is for the `whole` data. Now, we want to create a function with that code that we can apply to subsets of the data.
 
-**Turn code into a function**
+####**Turn code into a function**
 
 I can fit a function for each model separately... starting with the simple linear regression
 
@@ -120,6 +120,11 @@ fit_all_models(gapminder)
 ```
 
 **Observations**: This function allows us to test three models at once to a set of data with a `Life expectancy` and `year` variables, extract the parameters of interest from each model and compared them easily in a single output table; So, now we can use this function to fit the models for each continent or country...
+
+# Work with a nested data frame
+
+**Objective**: Create a nested data frame and map a function over the list column holding the nested data.
+
 
 
 

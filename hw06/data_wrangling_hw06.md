@@ -124,7 +124,7 @@ linear_mod(gapminder)
     ##             Intercept     Slope R-squared
     ## (Intercept)  50.51208 0.3259038 0.1892811
 
-We can see that these values correspond to the values above (model = linear1), obtained by fitting a simple regression to Life expectancy and year to gapminder. So that's good, the function is doing what we think is going to do...
+We can see that these values correspond to the values above (model = linear1), obtained by fitting a simple regression to Life expectancy and year to gapminder. So that's good, the function is doing what we think it is doing...
 
 **Now** We can fix a separate function for the quadractic and robust regression models, or **even better**... Try to create a function that fit all three models at once, extract the three parameters of interest `intercept`, `slope`, and `R-squared` from each model and output a single table with those values...
 
@@ -159,12 +159,10 @@ fit_all_models(gapminder)
 
 **Observations**: This function allows us to test three models at once to a set of data with a `Life expectancy` and `year` variables, extract the parameters of interest from each model and compared them easily in a single output table; So, now we can use this function to fit the models for each continent or country...
 
-`{r} gapminder %>%    group_by(continent) %>%    do(fit_all_models(.)) #`
-=========================================================================
+{r} gapminder %&gt;% group\_by(continent) %&gt;% do(fit\_all\_models(.))
 
 Another option using Broom... Explore later
 
-`{r} tidy(linear_mod) tidy(quadra_mod) glance(quadra_mod) tidy(robust_mod) #`
-=============================================================================
+{r} tidy(linear\_mod) tidy(quadra\_mod) glance(quadra\_mod) tidy(robust\_mod)
 
-Another option for robust regression \#`{r} library(robust) robust <- robust::lmRob(lifeExp ~ I(year - 1952), gapminder) #`
+Another option for robust regression {r} library(robust) robust &lt;- robust::lmRob(lifeExp ~ I(year - 1952), gapminder)
