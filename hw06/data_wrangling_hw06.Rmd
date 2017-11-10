@@ -47,8 +47,6 @@ We should start by fitting the models, and check how they behave by extracting t
 linear_mod <- lm(lifeExp ~ I(year - 1952), gapminder)
 quadra_mod <- lm(lifeExp ~ I(year - 1952) + I((year - 1952)^2), gapminder)
 robust_mod <- robustbase::lmrob(lifeExp ~ I(year - 1952), gapminder)
-library(robust)
-robust <- robust::lmRob(lifeExp ~ I(year - 1952), gapminder)
 ```
 
 We have to use `I(year - 1952)` instead of just `year` to fix the intercept to life expectancy on year 1952 (following Jenny Bryan's [post](http://stat545.com/block012_function-regress-lifeexp-on-year.html))
@@ -62,19 +60,19 @@ coef(quadra_mod)
 coef(robust_mod)
 ```
 
-And the R-squared to get a sense of how close the data are to the fitted regression line
+And the adjusted R-squared to get a sense of how close the data are to the fitted regression line
 ```{r}
 #adjusted r squared
 summary(linear_mod)$adj.r.squared
 summary(quadra_mod)$adj.r.squared
 summary(robust_mod)$adj.r.squared
-summary(robust_mod)
-summary(robust)
 ```
 
 We see that the robust and quadratic models perform a bit better than the simple linear model. But remember this is for the `whole` data. Now, we want to create a function with that code that we can apply to subsets of the data.
 
 **Turn code into a function**
+
+I can fit a function for each model separately...
 
 ```{r}
 linear_mod <- function(dat, offset = 1952) {
@@ -98,8 +96,35 @@ linear_mod(gapminder)
 ```{r}
 gapminder %>% 
   group_by(continent) %>% 
-  do(linear_mod(.))
+  do(fit_all_models(.))
 ```
+
+Or try to fit all models into the same function to get one single output
+
+```{r}
+fit_all_models <- function(dat, offset = 1952) {
+  linear <- lm(lifeExp ~ I(year - offset), dat)
+  quadra <- lm(lifeExp ~ I(year - offset) + I((year - offset)^2), dat)
+  robust <- robustbase::lmrob(lifeExp ~ I(year - offset), dat)
+  model <- c("Linear", "Quadratic", "Robust")
+  intercept <- c(coef(linear)[1], coef(quadra)[1], coef(robust)[1])
+  slope <- c(coef(linear)[2], coef(quadra)[2], coef(robust)[2])
+  Adjusted_Rsquared <- c(summary(linear)$adj.r.squared, summary(quadra)$adj.r.squared, 
+                         summary(robust)$adj.r.squared)
+  data.frame(model, intercept, slope, Adjusted_Rsquared) %>% 
+  setNames(c("Model", "Intercept", "Slope", "R-squared"))
+  #return(c(intercept, slope, r2))
+  #output <- list(intercept = intercept, slope = slope, r2 = r2)
+  #return(output)
+}
+```
+
+```{r}
+fit_all_models(gapminder)
+```
+
+
+
 
 
 Another option using Broom... Explore later
@@ -109,5 +134,11 @@ tidy(linear_mod)
 tidy(quadra_mod)
 glance(quadra_mod)
 tidy(robust_mod)
+```
+
+Another option for robust regression
+```{r}
+library(robust)
+robust <- robust::lmRob(lifeExp ~ I(year - 1952), gapminder)
 ```
 
