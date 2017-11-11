@@ -3,6 +3,8 @@ Data Wrangling wrap up
 Santiago David
 2017-11-07
 
+-   [Writing functions](#Writing-functions)
+
 #### Load data and packages
 
 ``` r
@@ -17,9 +19,7 @@ data("gapminder")
 Writing functions
 =================
 
-#### **Objective**:
-
-Write one (or more) functions that do something useful to pieces of the Gapminder or Singer data. Make it something that’s not trivial to do with the simple dplyr verbs.
+**Objective**: Write one (or more) functions that do something useful to pieces of the Gapminder or Singer data. Make it something that’s not trivial to do with the simple dplyr verbs.
 
 **Process**: The homework provide a good starting point with the gapminder data following Jenny's [tutorial](http://stat545.com/block012_function-regress-lifeexp-on-year.html) to create a linear regression of life expectancy on year. However, First things first, let's plot the data!
 
@@ -38,7 +38,7 @@ From these graphs, we can see that there is an increasing trend of life expectan
 
 The ideal function, will be one that takes a variable `life expectancty` and `year` as input, fit a model, and return the coefficients `intercept`, and `slope` and potentially the `R-squared` as a way to understand how well the model fit the data...
 
-**Create some code**
+#### **Create some code**
 
 We should start by fitting the models, and check how they behave by extracting the coefficients:
 
@@ -98,7 +98,7 @@ summary(robust1)$adj.r.squared
 
 Now, we see that the robust and quadratic models perform a bit better than the simple linear model. But remember this is for the `whole` data. Now, we want to create a function with that code that we can apply to subsets of the data.
 
-**Turn code into a function**
+#### **Turn code into a function**
 
 I can fit a function for each model separately... starting with the simple linear regression
 
@@ -157,9 +157,41 @@ fit_all_models(gapminder)
     ## 2 Quadratic  48.91614 0.5174174 0.1938648
     ## 3    Robust  50.12191 0.3500189 0.1946681
 
-**Observations**: This function allows us to test three models at once to a set of data with a `Life expectancy` and `year` variables, extract the parameters of interest from each model and compared them easily in a single output table; So, now we can use this function to fit the models for each continent or country...
+**Observations**: This function allows us to test three models at once to a set of data with a `Life expectancy` and `year` variables, extract the parameters of interest from each model and compared them easily in a single output table; So, now we can use this function to fit the models for each continent (or country)...
 
-{r} gapminder %&gt;% group\_by(continent) %&gt;% do(fit\_all\_models(.))
+Let's try it for each continent, using the function `do`
+
+``` r
+gapminder %>% 
+  group_by(continent) %>% 
+  do(fit_all_models(.)) %>% 
+  knitr::kable(format = "markdown")
+```
+
+| continent | Model     |  Intercept|      Slope|  R-squared|
+|:----------|:----------|----------:|----------:|----------:|
+| Africa    | Linear    |   40.90328|  0.2895293|  0.2976269|
+| Africa    | Quadratic |   38.53130|  0.5741664|  0.3188398|
+| Africa    | Robust    |   40.78514|  0.2806586|  0.2921317|
+| Americas  | Linear    |   54.54834|  0.3676509|  0.4608435|
+| Americas  | Quadratic |   53.41509|  0.5036401|  0.4639434|
+| Americas  | Robust    |   55.07642|  0.3605386|  0.4476621|
+| Asia      | Linear    |   47.60404|  0.4531224|  0.4342026|
+| Asia      | Quadratic |   45.95293|  0.6512555|  0.4392204|
+| Asia      | Robust    |   47.43609|  0.4704215|  0.4580228|
+| Europe    | Linear    |   65.80055|  0.2219321|  0.4970649|
+| Europe    | Quadratic |   65.05472|  0.3114316|  0.5019442|
+| Europe    | Robust    |   67.07912|  0.1969165|  0.5597117|
+| Oceania   | Linear    |   68.54372|  0.2102724|  0.9519800|
+| Oceania   | Quadratic |   69.49916|  0.0956199|  0.9736564|
+| Oceania   | Robust    |   68.58637|  0.2095208|  0.9473766|
+
+Now we can compare the `Intercept`, `Slope` and `Adjusted R-squared` per model for each continent with a single function that can be modified easily, if we want to extract something else from these models. Of course for statistical purposes, it is necessary to explore other aspects of these models, such as the estimated coefficients, F-test, etc... and not just the Adjusted R-squared values...
+
+Work with a nested data frame
+=============================
+
+**Objective**: Create a nested data frame and map a function over the list column holding the nested data.
 
 Another option using Broom... Explore later
 

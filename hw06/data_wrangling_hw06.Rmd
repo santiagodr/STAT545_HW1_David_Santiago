@@ -119,7 +119,18 @@ Okay, let's see if it works for the whole gapminder... we should obtain exactly 
 fit_all_models(gapminder)
 ```
 
-**Observations**: This function allows us to test three models at once to a set of data with a `Life expectancy` and `year` variables, extract the parameters of interest from each model and compared them easily in a single output table; So, now we can use this function to fit the models for each continent or country...
+**Observations**: This function allows us to test three models at once to a set of data with a `Life expectancy` and `year` variables, extract the parameters of interest from each model and compared them easily in a single output table; So, now we can use this function to fit the models for each continent (or country)...
+
+Let's try it for each continent, using the function `do`
+
+```{r}
+gapminder %>% 
+  group_by(continent) %>% 
+  do(fit_all_models(.)) %>% 
+  knitr::kable(format = "markdown")
+```
+
+Now we can compare the `Intercept`, `Slope` and `Adjusted R-squared` per model for each continent with a single function that can be modified easily, if we want to extract something else from these models. Of course for statistical purposes, it is necessary to explore other aspects of these models, such as the estimated coefficients, F-test, etc... and not just the Adjusted R-squared values...
 
 # Work with a nested data frame
 
@@ -128,10 +139,7 @@ fit_all_models(gapminder)
 
 
 
-{r}
-gapminder %>% 
-  group_by(continent) %>% 
-  do(fit_all_models(.))
+
 
 
 

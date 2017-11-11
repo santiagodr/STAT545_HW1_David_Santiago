@@ -12,4 +12,4 @@ All coding, graphs, and materials are in this [md.file](pending)
 
 - To understand Robust Regressions, I read [this post](https://stats.idre.ucla.edu/r/dae/robust-regression/) from UCLA
 
-- I also read the documentation for `lm` [Fitting linear models](https://www.rdocumentation.org/packages/stats/versions/3.4.1/topics/lm), to understand how to extract specific information from this objects
+- I also read the documentation for `lm` [Fitting linear models](https://www.rdocumentation.org/packages/stats/versions/3.4.1/topics/lm), and `lmrob` [MM-Type Estimators For Linear Regression](https://www.rdocumentation.org/packages/robustbase/versions/0.92-7/topics/lmrob) to understand how to extract specific information from these objects
