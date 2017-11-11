@@ -3,8 +3,8 @@ Data Wrangling wrap up
 Santiago David
 2017-11-07
 
--   [Writing functions](#Writing-functions)
--   [Work with a nested data frame](#Work-with-a-nested-data-frame)
+-   [Writing functions](#writing-functions)
+-   [Work with a nested data frame](#work-with-a-nested-data-frame)
 
 #### Load data and packages
 
