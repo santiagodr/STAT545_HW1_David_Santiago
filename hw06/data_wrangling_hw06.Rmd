@@ -108,7 +108,7 @@ fit_all_models <- function(dat, offset = 1952) {
   Adjusted_Rsquared <- c(summary(linear)$adj.r.squared, summary(quadra)$adj.r.squared, 
                          summary(robust)$adj.r.squared)
   # what we want for the output
-  data.frame(model, intercept, slope, Adjusted_Rsquared) %>% 
+  tibble(model, intercept, slope, Adjusted_Rsquared) %>% 
   setNames(c("Model", "Intercept", "Slope", "R-squared"))
 }
 ```
@@ -136,9 +136,41 @@ Now we can compare the `Intercept`, `Slope` and `Adjusted R-squared` per model f
 
 **Objective**: Create a nested data frame and map a function over the list column holding the nested data.
 
+**Process**: I will apply the function I created `fit_all_models` over a nested dataframe
 
+```{r}
+(gapminder %>% 
+  group_by(continent, country) %>% 
+  do(fit_all_models(.))) %>% 
+  head() %>% 
+  knitr::kable(format = "markdown")
+```
 
+First, we "nest" the data by continent and country, 
 
+```{r}
+gap_nested <- gapminder %>% 
+  group_by(continent, country) %>% 
+  nest()
+head(gap_nested)
+```
+
+Apply function
+
+```{r}
+(map(gap_nested$data[1:2], fit_all_models))
+```
+
+```{r}
+(gap_nested <- gap_nested %>% 
+  mutate(model_fits = map(data, fit_all_models)))
+```
+
+```{r}
+(gap_nested %>% 
+   select(continent, country, model_fits) %>% 
+   unnest(model_fits))
+```
 
 
 

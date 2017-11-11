@@ -141,7 +141,7 @@ fit_all_models <- function(dat, offset = 1952) {
   Adjusted_Rsquared <- c(summary(linear)$adj.r.squared, summary(quadra)$adj.r.squared, 
                          summary(robust)$adj.r.squared)
   # what we want for the output
-  data.frame(model, intercept, slope, Adjusted_Rsquared) %>% 
+  tibble(model, intercept, slope, Adjusted_Rsquared) %>% 
   setNames(c("Model", "Intercept", "Slope", "R-squared"))
 }
 ```
@@ -152,10 +152,12 @@ Okay, let's see if it works for the whole gapminder... we should obtain exactly 
 fit_all_models(gapminder)
 ```
 
-    ##       Model Intercept     Slope R-squared
-    ## 1    Linear  50.51208 0.3259038 0.1892811
-    ## 2 Quadratic  48.91614 0.5174174 0.1938648
-    ## 3    Robust  50.12191 0.3500189 0.1946681
+    ## # A tibble: 3 x 4
+    ##       Model Intercept     Slope `R-squared`
+    ##       <chr>     <dbl>     <dbl>       <dbl>
+    ## 1    Linear  50.51208 0.3259038   0.1892811
+    ## 2 Quadratic  48.91614 0.5174174   0.1938648
+    ## 3    Robust  50.12191 0.3500189   0.1946681
 
 **Observations**: This function allows us to test three models at once to a set of data with a `Life expectancy` and `year` variables, extract the parameters of interest from each model and compared them easily in a single output table; So, now we can use this function to fit the models for each continent (or country)...
 
@@ -184,7 +186,7 @@ gapminder %>%
 | Europe    | Robust    |   67.07912|  0.1969165|  0.5597117|
 | Oceania   | Linear    |   68.54372|  0.2102724|  0.9519800|
 | Oceania   | Quadratic |   69.49916|  0.0956199|  0.9736564|
-| Oceania   | Robust    |   68.58637|  0.2095208|  0.9473766|
+| Oceania   | Robust    |   68.58637|  0.2095208|  0.9473769|
 
 Now we can compare the `Intercept`, `Slope` and `Adjusted R-squared` per model for each continent with a single function that can be modified easily, if we want to extract something else from these models. Of course for statistical purposes, it is necessary to explore other aspects of these models, such as the estimated coefficients, F-test, etc... and not just the Adjusted R-squared values...
 
@@ -192,6 +194,197 @@ Work with a nested data frame
 =============================
 
 **Objective**: Create a nested data frame and map a function over the list column holding the nested data.
+
+**Process**: I will apply the function I created `fit_all_models` over a nested dataframe
+
+``` r
+(gapminder %>% 
+  group_by(continent, country) %>% 
+  do(fit_all_models(.))) %>% 
+  head() %>% 
+  knitr::kable(format = "markdown")
+```
+
+    ## Warning in lmrob.S(x, y, control = control, mf = mf): find_scale() did not
+    ## converge in 'maxit.scale' (= 200) iterations
+
+    ## Warning in lmrob.S(x, y, control = control, mf = mf): find_scale() did not
+    ## converge in 'maxit.scale' (= 200) iterations
+
+    ## Warning in lmrob.S(x, y, control = control, mf = mf): find_scale() did not
+    ## converge in 'maxit.scale' (= 200) iterations
+
+    ## Warning in lmrob.S(x, y, control = control, mf = mf): find_scale() did not
+    ## converge in 'maxit.scale' (= 200) iterations
+
+    ## Warning in lmrob.S(x, y, control = control, mf = mf): find_scale() did not
+    ## converge in 'maxit.scale' (= 200) iterations
+
+    ## Warning in lmrob.S(x, y, control = control, mf = mf): find_scale() did not
+    ## converge in 'maxit.scale' (= 200) iterations
+
+    ## Warning in lmrob.S(x, y, control = control, mf = mf): find_scale() did not
+    ## converge in 'maxit.scale' (= 200) iterations
+
+    ## Warning in lmrob.S(x, y, control = control, mf = mf): find_scale() did not
+    ## converge in 'maxit.scale' (= 200) iterations
+
+    ## Warning in lmrob.S(x, y, control = control, mf = mf): find_scale() did not
+    ## converge in 'maxit.scale' (= 200) iterations
+
+    ## Warning in lmrob.S(x, y, control = control, mf = mf): find_scale() did not
+    ## converge in 'maxit.scale' (= 200) iterations
+
+    ## Warning in lmrob.S(x, y, control = control, mf = mf): find_scale() did not
+    ## converge in 'maxit.scale' (= 200) iterations
+
+    ## Warning in lmrob.S(x, y, control = control, mf = mf): find_scale() did not
+    ## converge in 'maxit.scale' (= 200) iterations
+
+    ## Warning in lmrob.S(x, y, control = control, mf = mf): find_scale() did not
+    ## converge in 'maxit.scale' (= 200) iterations
+
+    ## Warning in lmrob.S(x, y, control = control, mf = mf): find_scale() did not
+    ## converge in 'maxit.scale' (= 200) iterations
+
+    ## Warning in lmrob.S(x, y, control = control, mf = mf): find_scale() did not
+    ## converge in 'maxit.scale' (= 200) iterations
+
+    ## Warning in lmrob.S(x, y, control = control, mf = mf): find_scale() did not
+    ## converge in 'maxit.scale' (= 200) iterations
+
+| continent | country | Model     |  Intercept|      Slope|  R-squared|
+|:----------|:--------|:----------|----------:|----------:|----------:|
+| Africa    | Algeria | Linear    |   43.37497|  0.5692797|  0.9836289|
+| Africa    | Algeria | Quadratic |   41.94224|  0.7412083|  0.9902809|
+| Africa    | Algeria | Robust    |   43.20325|  0.5749819|  0.9851801|
+| Africa    | Angola  | Linear    |   32.12665|  0.2093399|  0.8765961|
+| Africa    | Angola  | Quadratic |   30.11767|  0.4504179|  0.9738877|
+| Africa    | Angola  | Robust    |   32.18660|  0.2069345|  0.8612663|
+
+First, we "nest" the data by continent and country,
+
+``` r
+gap_nested <- gapminder %>% 
+  group_by(continent, country) %>% 
+  nest()
+head(gap_nested)
+```
+
+    ## # A tibble: 6 x 3
+    ##   continent     country              data
+    ##      <fctr>      <fctr>            <list>
+    ## 1      Asia Afghanistan <tibble [12 x 4]>
+    ## 2    Europe     Albania <tibble [12 x 4]>
+    ## 3    Africa     Algeria <tibble [12 x 4]>
+    ## 4    Africa      Angola <tibble [12 x 4]>
+    ## 5  Americas   Argentina <tibble [12 x 4]>
+    ## 6   Oceania   Australia <tibble [12 x 4]>
+
+Apply function
+
+``` r
+(map(gap_nested$data[1:2], fit_all_models))
+```
+
+    ## [[1]]
+    ## # A tibble: 3 x 4
+    ##       Model Intercept     Slope `R-squared`
+    ##       <chr>     <dbl>     <dbl>       <dbl>
+    ## 1    Linear  29.90729 0.2753287   0.9424835
+    ## 2 Quadratic  28.17869 0.4827616   0.9868071
+    ## 3    Robust  29.83807 0.2767131   0.9364287
+    ## 
+    ## [[2]]
+    ## # A tibble: 3 x 4
+    ##       Model Intercept     Slope `R-squared`
+    ##       <chr>     <dbl>     <dbl>       <dbl>
+    ## 1    Linear  59.22913 0.3346832   0.9016355
+    ## 2 Quadratic  56.85313 0.6198024   0.9530084
+    ## 3    Robust  62.52934 0.2510398   0.9751008
+
+``` r
+(gap_nested <- gap_nested %>% 
+  mutate(model_fits = map(data, fit_all_models)))
+```
+
+    ## Warning in lmrob.S(x, y, control = control, mf = mf): find_scale() did not
+    ## converge in 'maxit.scale' (= 200) iterations
+
+    ## Warning in lmrob.S(x, y, control = control, mf = mf): find_scale() did not
+    ## converge in 'maxit.scale' (= 200) iterations
+
+    ## Warning in lmrob.S(x, y, control = control, mf = mf): find_scale() did not
+    ## converge in 'maxit.scale' (= 200) iterations
+
+    ## Warning in lmrob.S(x, y, control = control, mf = mf): find_scale() did not
+    ## converge in 'maxit.scale' (= 200) iterations
+
+    ## Warning in lmrob.S(x, y, control = control, mf = mf): find_scale() did not
+    ## converge in 'maxit.scale' (= 200) iterations
+
+    ## Warning in lmrob.S(x, y, control = control, mf = mf): find_scale() did not
+    ## converge in 'maxit.scale' (= 200) iterations
+
+    ## Warning in lmrob.S(x, y, control = control, mf = mf): find_scale() did not
+    ## converge in 'maxit.scale' (= 200) iterations
+
+    ## Warning in lmrob.S(x, y, control = control, mf = mf): find_scale() did not
+    ## converge in 'maxit.scale' (= 200) iterations
+
+    ## Warning in lmrob.S(x, y, control = control, mf = mf): find_scale() did not
+    ## converge in 'maxit.scale' (= 200) iterations
+
+    ## Warning in lmrob.S(x, y, control = control, mf = mf): find_scale() did not
+    ## converge in 'maxit.scale' (= 200) iterations
+
+    ## Warning in lmrob.S(x, y, control = control, mf = mf): find_scale() did not
+    ## converge in 'maxit.scale' (= 200) iterations
+
+    ## Warning in lmrob.S(x, y, control = control, mf = mf): find_scale() did not
+    ## converge in 'maxit.scale' (= 200) iterations
+
+    ## Warning in lmrob.S(x, y, control = control, mf = mf): find_scale() did not
+    ## converge in 'maxit.scale' (= 200) iterations
+
+    ## Warning in lmrob.S(x, y, control = control, mf = mf): find_scale() did not
+    ## converge in 'maxit.scale' (= 200) iterations
+
+    ## # A tibble: 142 x 4
+    ##    continent     country              data       model_fits
+    ##       <fctr>      <fctr>            <list>           <list>
+    ##  1      Asia Afghanistan <tibble [12 x 4]> <tibble [3 x 4]>
+    ##  2    Europe     Albania <tibble [12 x 4]> <tibble [3 x 4]>
+    ##  3    Africa     Algeria <tibble [12 x 4]> <tibble [3 x 4]>
+    ##  4    Africa      Angola <tibble [12 x 4]> <tibble [3 x 4]>
+    ##  5  Americas   Argentina <tibble [12 x 4]> <tibble [3 x 4]>
+    ##  6   Oceania   Australia <tibble [12 x 4]> <tibble [3 x 4]>
+    ##  7    Europe     Austria <tibble [12 x 4]> <tibble [3 x 4]>
+    ##  8      Asia     Bahrain <tibble [12 x 4]> <tibble [3 x 4]>
+    ##  9      Asia  Bangladesh <tibble [12 x 4]> <tibble [3 x 4]>
+    ## 10    Europe     Belgium <tibble [12 x 4]> <tibble [3 x 4]>
+    ## # ... with 132 more rows
+
+``` r
+(gap_nested %>% 
+   select(continent, country, model_fits) %>% 
+   unnest(model_fits))
+```
+
+    ## # A tibble: 426 x 6
+    ##    continent     country     Model Intercept     Slope `R-squared`
+    ##       <fctr>      <fctr>     <chr>     <dbl>     <dbl>       <dbl>
+    ##  1      Asia Afghanistan    Linear  29.90729 0.2753287   0.9424835
+    ##  2      Asia Afghanistan Quadratic  28.17869 0.4827616   0.9868071
+    ##  3      Asia Afghanistan    Robust  29.83807 0.2767131   0.9364287
+    ##  4    Europe     Albania    Linear  59.22913 0.3346832   0.9016355
+    ##  5    Europe     Albania Quadratic  56.85313 0.6198024   0.9530084
+    ##  6    Europe     Albania    Robust  62.52934 0.2510398   0.9751008
+    ##  7    Africa     Algeria    Linear  43.37497 0.5692797   0.9836289
+    ##  8    Africa     Algeria Quadratic  41.94224 0.7412083   0.9902809
+    ##  9    Africa     Algeria    Robust  43.20325 0.5749819   0.9851801
+    ## 10    Africa      Angola    Linear  32.12665 0.2093399   0.8765961
+    ## # ... with 416 more rows
 
 Another option using Broom... Explore later
 
