@@ -142,7 +142,7 @@ fit_all_models <- function(dat, offset = 1952) {
                          summary(robust)$adj.r.squared)
   # what we want for the output
   tibble(model, intercept, slope, Adjusted_Rsquared) %>% 
-  setNames(c("Model", "Intercept", "Slope", "R-squared"))
+  setNames(c("Model", "Intercept", "Slope", "Rsquared"))
 }
 ```
 
@@ -153,15 +153,15 @@ fit_all_models(gapminder)
 ```
 
     ## # A tibble: 3 x 4
-    ##       Model Intercept     Slope `R-squared`
-    ##       <chr>     <dbl>     <dbl>       <dbl>
-    ## 1    Linear  50.51208 0.3259038   0.1892811
-    ## 2 Quadratic  48.91614 0.5174174   0.1938648
-    ## 3    Robust  50.12191 0.3500189   0.1946681
+    ##       Model Intercept     Slope  Rsquared
+    ##       <chr>     <dbl>     <dbl>     <dbl>
+    ## 1    Linear  50.51208 0.3259038 0.1892811
+    ## 2 Quadratic  48.91614 0.5174174 0.1938648
+    ## 3    Robust  50.12191 0.3500189 0.1946681
 
 **Observations**: This function allows us to test three models at once to a set of data with a `Life expectancy` and `year` variables, extract the parameters of interest from each model and compared them easily in a single output table; So, now we can use this function to fit the models for each continent (or country)...
 
-Let's try it for each continent, using the function `do`
+Let's try it for each continent, using the function `do`. We can check the output in a table
 
 ``` r
 gapminder %>% 
@@ -170,7 +170,7 @@ gapminder %>%
   knitr::kable(format = "markdown")
 ```
 
-| continent | Model     |  Intercept|      Slope|  R-squared|
+| continent | Model     |  Intercept|      Slope|   Rsquared|
 |:----------|:----------|----------:|----------:|----------:|
 | Africa    | Linear    |   40.90328|  0.2895293|  0.2976269|
 | Africa    | Quadratic |   38.53130|  0.5741664|  0.3188398|
@@ -183,172 +183,83 @@ gapminder %>%
 | Asia      | Robust    |   47.43609|  0.4704215|  0.4580228|
 | Europe    | Linear    |   65.80055|  0.2219321|  0.4970649|
 | Europe    | Quadratic |   65.05472|  0.3114316|  0.5019442|
-| Europe    | Robust    |   67.07912|  0.1969165|  0.5597117|
+| Europe    | Robust    |   67.07912|  0.1969165|  0.5597119|
 | Oceania   | Linear    |   68.54372|  0.2102724|  0.9519800|
 | Oceania   | Quadratic |   69.49916|  0.0956199|  0.9736564|
 | Oceania   | Robust    |   68.58637|  0.2095208|  0.9473769|
+
+Or visualize one parameter, such as the Adjusted R-squared per model for each continent in a graph...
+
+``` r
+gapminder %>% 
+  group_by(continent) %>% 
+  do(fit_all_models(.)) %>% 
+  ggplot(aes(x=continent, y= Rsquared , fill = Model)) +
+           geom_bar(position = "dodge", stat = "identity") +
+           theme_classic()
+```
+
+![](data_wrangling_hw06_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-11-1.png)
 
 Now we can compare the `Intercept`, `Slope` and `Adjusted R-squared` per model for each continent with a single function that can be modified easily, if we want to extract something else from these models. Of course for statistical purposes, it is necessary to explore other aspects of these models, such as the estimated coefficients, F-test, etc... and not just the Adjusted R-squared values...
 
 Work with a nested data frame
 =============================
 
-**Objective**: Create a nested data frame and map a function over the list column holding the nested data.
+**Objective**: Create a nested data frame and map a function over the list column holding the nested data. Try to extract parameters from the models and go back to a simple data frame with summarized results.
 
-**Process**: I will apply the function I created `fit_all_models` over a nested dataframe
-
-``` r
-(gapminder %>% 
-  group_by(continent, country) %>% 
-  do(fit_all_models(.))) %>% 
-  head() %>% 
-  knitr::kable(format = "markdown")
-```
-
-    ## Warning in lmrob.S(x, y, control = control, mf = mf): find_scale() did not
-    ## converge in 'maxit.scale' (= 200) iterations
-
-    ## Warning in lmrob.S(x, y, control = control, mf = mf): find_scale() did not
-    ## converge in 'maxit.scale' (= 200) iterations
-
-    ## Warning in lmrob.S(x, y, control = control, mf = mf): find_scale() did not
-    ## converge in 'maxit.scale' (= 200) iterations
-
-    ## Warning in lmrob.S(x, y, control = control, mf = mf): find_scale() did not
-    ## converge in 'maxit.scale' (= 200) iterations
-
-    ## Warning in lmrob.S(x, y, control = control, mf = mf): find_scale() did not
-    ## converge in 'maxit.scale' (= 200) iterations
-
-    ## Warning in lmrob.S(x, y, control = control, mf = mf): find_scale() did not
-    ## converge in 'maxit.scale' (= 200) iterations
-
-    ## Warning in lmrob.S(x, y, control = control, mf = mf): find_scale() did not
-    ## converge in 'maxit.scale' (= 200) iterations
-
-    ## Warning in lmrob.S(x, y, control = control, mf = mf): find_scale() did not
-    ## converge in 'maxit.scale' (= 200) iterations
-
-    ## Warning in lmrob.S(x, y, control = control, mf = mf): find_scale() did not
-    ## converge in 'maxit.scale' (= 200) iterations
-
-    ## Warning in lmrob.S(x, y, control = control, mf = mf): find_scale() did not
-    ## converge in 'maxit.scale' (= 200) iterations
-
-    ## Warning in lmrob.S(x, y, control = control, mf = mf): find_scale() did not
-    ## converge in 'maxit.scale' (= 200) iterations
-
-    ## Warning in lmrob.S(x, y, control = control, mf = mf): find_scale() did not
-    ## converge in 'maxit.scale' (= 200) iterations
-
-    ## Warning in lmrob.S(x, y, control = control, mf = mf): find_scale() did not
-    ## converge in 'maxit.scale' (= 200) iterations
-
-    ## Warning in lmrob.S(x, y, control = control, mf = mf): find_scale() did not
-    ## converge in 'maxit.scale' (= 200) iterations
-
-    ## Warning in lmrob.S(x, y, control = control, mf = mf): find_scale() did not
-    ## converge in 'maxit.scale' (= 200) iterations
-
-    ## Warning in lmrob.S(x, y, control = control, mf = mf): find_scale() did not
-    ## converge in 'maxit.scale' (= 200) iterations
-
-| continent | country | Model     |  Intercept|      Slope|  R-squared|
-|:----------|:--------|:----------|----------:|----------:|----------:|
-| Africa    | Algeria | Linear    |   43.37497|  0.5692797|  0.9836289|
-| Africa    | Algeria | Quadratic |   41.94224|  0.7412083|  0.9902809|
-| Africa    | Algeria | Robust    |   43.20325|  0.5749819|  0.9851801|
-| Africa    | Angola  | Linear    |   32.12665|  0.2093399|  0.8765961|
-| Africa    | Angola  | Quadratic |   30.11767|  0.4504179|  0.9738877|
-| Africa    | Angola  | Robust    |   32.18660|  0.2069345|  0.8612663|
-
-First, we "nest" the data by continent and country,
+**Process**: First, I will "nest" the data in gapminder by continent and country, using `nest()`...
 
 ``` r
 gap_nested <- gapminder %>% 
   group_by(continent, country) %>% 
   nest()
-head(gap_nested)
+gap_nested
 ```
 
-    ## # A tibble: 6 x 3
-    ##   continent     country              data
-    ##      <fctr>      <fctr>            <list>
-    ## 1      Asia Afghanistan <tibble [12 x 4]>
-    ## 2    Europe     Albania <tibble [12 x 4]>
-    ## 3    Africa     Algeria <tibble [12 x 4]>
-    ## 4    Africa      Angola <tibble [12 x 4]>
-    ## 5  Americas   Argentina <tibble [12 x 4]>
-    ## 6   Oceania   Australia <tibble [12 x 4]>
+    ## # A tibble: 142 x 3
+    ##    continent     country              data
+    ##       <fctr>      <fctr>            <list>
+    ##  1      Asia Afghanistan <tibble [12 x 4]>
+    ##  2    Europe     Albania <tibble [12 x 4]>
+    ##  3    Africa     Algeria <tibble [12 x 4]>
+    ##  4    Africa      Angola <tibble [12 x 4]>
+    ##  5  Americas   Argentina <tibble [12 x 4]>
+    ##  6   Oceania   Australia <tibble [12 x 4]>
+    ##  7    Europe     Austria <tibble [12 x 4]>
+    ##  8      Asia     Bahrain <tibble [12 x 4]>
+    ##  9      Asia  Bangladesh <tibble [12 x 4]>
+    ## 10    Europe     Belgium <tibble [12 x 4]>
+    ## # ... with 132 more rows
 
-Apply function
+We can see that this "new" dataframe collapsed all information associated to each country in a new variable `data` of the type `list`. I don't really need to inspect this list, since we know what there is inside, but just to give an example to my future self, this is how I can access information for a specific element.
 
 ``` r
-(map(gap_nested$data[1:2], fit_all_models))
+gap_nested[[1, "data"]]
 ```
 
-    ## [[1]]
-    ## # A tibble: 3 x 4
-    ##       Model Intercept     Slope `R-squared`
-    ##       <chr>     <dbl>     <dbl>       <dbl>
-    ## 1    Linear  29.90729 0.2753287   0.9424835
-    ## 2 Quadratic  28.17869 0.4827616   0.9868071
-    ## 3    Robust  29.83807 0.2767131   0.9364287
-    ## 
-    ## [[2]]
-    ## # A tibble: 3 x 4
-    ##       Model Intercept     Slope `R-squared`
-    ##       <chr>     <dbl>     <dbl>       <dbl>
-    ## 1    Linear  59.22913 0.3346832   0.9016355
-    ## 2 Quadratic  56.85313 0.6198024   0.9530084
-    ## 3    Robust  62.52934 0.2510398   0.9751008
+    ## # A tibble: 12 x 4
+    ##     year lifeExp      pop gdpPercap
+    ##    <int>   <dbl>    <int>     <dbl>
+    ##  1  1952  28.801  8425333  779.4453
+    ##  2  1957  30.332  9240934  820.8530
+    ##  3  1962  31.997 10267083  853.1007
+    ##  4  1967  34.020 11537966  836.1971
+    ##  5  1972  36.088 13079460  739.9811
+    ##  6  1977  38.438 14880372  786.1134
+    ##  7  1982  39.854 12881816  978.0114
+    ##  8  1987  40.822 13867957  852.3959
+    ##  9  1992  41.674 16317921  649.3414
+    ## 10  1997  41.763 22227415  635.3414
+    ## 11  2002  42.129 25268405  726.7341
+    ## 12  2007  43.828 31889923  974.5803
+
+Now, I can start applying **my** function `fit_all_models` over the nested dataframe. Let's do it for all countries applying `purrr:map()`. Following the recommendation in the [split-apply-combine](http://stat545.com/block024_group-nest-split-map.html) lesson, we can use mutate to create a new column in the same dataframe for the output of this function...
 
 ``` r
 (gap_nested <- gap_nested %>% 
   mutate(model_fits = map(data, fit_all_models)))
 ```
-
-    ## Warning in lmrob.S(x, y, control = control, mf = mf): find_scale() did not
-    ## converge in 'maxit.scale' (= 200) iterations
-
-    ## Warning in lmrob.S(x, y, control = control, mf = mf): find_scale() did not
-    ## converge in 'maxit.scale' (= 200) iterations
-
-    ## Warning in lmrob.S(x, y, control = control, mf = mf): find_scale() did not
-    ## converge in 'maxit.scale' (= 200) iterations
-
-    ## Warning in lmrob.S(x, y, control = control, mf = mf): find_scale() did not
-    ## converge in 'maxit.scale' (= 200) iterations
-
-    ## Warning in lmrob.S(x, y, control = control, mf = mf): find_scale() did not
-    ## converge in 'maxit.scale' (= 200) iterations
-
-    ## Warning in lmrob.S(x, y, control = control, mf = mf): find_scale() did not
-    ## converge in 'maxit.scale' (= 200) iterations
-
-    ## Warning in lmrob.S(x, y, control = control, mf = mf): find_scale() did not
-    ## converge in 'maxit.scale' (= 200) iterations
-
-    ## Warning in lmrob.S(x, y, control = control, mf = mf): find_scale() did not
-    ## converge in 'maxit.scale' (= 200) iterations
-
-    ## Warning in lmrob.S(x, y, control = control, mf = mf): find_scale() did not
-    ## converge in 'maxit.scale' (= 200) iterations
-
-    ## Warning in lmrob.S(x, y, control = control, mf = mf): find_scale() did not
-    ## converge in 'maxit.scale' (= 200) iterations
-
-    ## Warning in lmrob.S(x, y, control = control, mf = mf): find_scale() did not
-    ## converge in 'maxit.scale' (= 200) iterations
-
-    ## Warning in lmrob.S(x, y, control = control, mf = mf): find_scale() did not
-    ## converge in 'maxit.scale' (= 200) iterations
-
-    ## Warning in lmrob.S(x, y, control = control, mf = mf): find_scale() did not
-    ## converge in 'maxit.scale' (= 200) iterations
-
-    ## Warning in lmrob.S(x, y, control = control, mf = mf): find_scale() did not
-    ## converge in 'maxit.scale' (= 200) iterations
 
     ## # A tibble: 142 x 4
     ##    continent     country              data       model_fits
@@ -365,26 +276,56 @@ Apply function
     ## 10    Europe     Belgium <tibble [12 x 4]> <tibble [3 x 4]>
     ## # ... with 132 more rows
 
+Now, we have a column with the output of the function `fit_all_models` called `model_fits`, which happens to be another tibble... Again, we can inspect the info in that element for the first country in the database...
+
+``` r
+gap_nested[[1, "model_fits"]]
+```
+
+    ## # A tibble: 3 x 4
+    ##       Model Intercept     Slope  Rsquared
+    ##       <chr>     <dbl>     <dbl>     <dbl>
+    ## 1    Linear  29.90729 0.2753287 0.9424835
+    ## 2 Quadratic  28.17869 0.4827616 0.9868071
+    ## 3    Robust  29.83807 0.2767131 0.9364287
+
+Finally, we can extract the information in this column for all countries by `unnesting` the dataframe to a normal tibble...
+
 ``` r
 (gap_nested %>% 
    select(continent, country, model_fits) %>% 
-   unnest(model_fits))
+   unnest(model_fits) %>% 
+   head())
 ```
 
-    ## # A tibble: 426 x 6
-    ##    continent     country     Model Intercept     Slope `R-squared`
-    ##       <fctr>      <fctr>     <chr>     <dbl>     <dbl>       <dbl>
-    ##  1      Asia Afghanistan    Linear  29.90729 0.2753287   0.9424835
-    ##  2      Asia Afghanistan Quadratic  28.17869 0.4827616   0.9868071
-    ##  3      Asia Afghanistan    Robust  29.83807 0.2767131   0.9364287
-    ##  4    Europe     Albania    Linear  59.22913 0.3346832   0.9016355
-    ##  5    Europe     Albania Quadratic  56.85313 0.6198024   0.9530084
-    ##  6    Europe     Albania    Robust  62.52934 0.2510398   0.9751008
-    ##  7    Africa     Algeria    Linear  43.37497 0.5692797   0.9836289
-    ##  8    Africa     Algeria Quadratic  41.94224 0.7412083   0.9902809
-    ##  9    Africa     Algeria    Robust  43.20325 0.5749819   0.9851801
-    ## 10    Africa      Angola    Linear  32.12665 0.2093399   0.8765961
-    ## # ... with 416 more rows
+    ## # A tibble: 6 x 6
+    ##   continent     country     Model Intercept     Slope  Rsquared
+    ##      <fctr>      <fctr>     <chr>     <dbl>     <dbl>     <dbl>
+    ## 1      Asia Afghanistan    Linear  29.90729 0.2753287 0.9424835
+    ## 2      Asia Afghanistan Quadratic  28.17869 0.4827616 0.9868071
+    ## 3      Asia Afghanistan    Robust  29.83807 0.2767131 0.9364287
+    ## 4    Europe     Albania    Linear  59.22913 0.3346832 0.9016355
+    ## 5    Europe     Albania Quadratic  56.85313 0.6198024 0.9530084
+    ## 6    Europe     Albania    Robust  62.52934 0.2510398 0.9751008
+
+**Okay**, so far so good... I practice applying a function that I created over elements of a nested dataframe. However, for this specific example, you might notice that this long process was unnecessary, given that in my original function, I already specified the elements I wanted from the models, so, just by simply applying the function over the database, grouped by continent and country, I will obtain exactly the same dataframe as above...
+
+``` r
+(gapminder %>% 
+  group_by(country, continent) %>% 
+  do(fit_all_models(.))) %>% 
+  head() %>% 
+  knitr::kable(format = "markdown")
+```
+
+| country     | continent | Model     |  Intercept|      Slope|   Rsquared|
+|:------------|:----------|:----------|----------:|----------:|----------:|
+| Afghanistan | Asia      | Linear    |   29.90729|  0.2753287|  0.9424835|
+| Afghanistan | Asia      | Quadratic |   28.17869|  0.4827616|  0.9868071|
+| Afghanistan | Asia      | Robust    |   29.83807|  0.2767131|  0.9364287|
+| Albania     | Europe    | Linear    |   59.22913|  0.3346832|  0.9016355|
+| Albania     | Europe    | Quadratic |   56.85313|  0.6198024|  0.9530084|
+| Albania     | Europe    | Robust    |   62.52934|  0.2510398|  0.9751008|
 
 Another option using Broom... Explore later
 

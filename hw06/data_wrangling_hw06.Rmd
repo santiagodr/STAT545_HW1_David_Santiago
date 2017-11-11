@@ -109,7 +109,7 @@ fit_all_models <- function(dat, offset = 1952) {
                          summary(robust)$adj.r.squared)
   # what we want for the output
   tibble(model, intercept, slope, Adjusted_Rsquared) %>% 
-  setNames(c("Model", "Intercept", "Slope", "R-squared"))
+  setNames(c("Model", "Intercept", "Slope", "Rsquared"))
 }
 ```
 
@@ -121,7 +121,7 @@ fit_all_models(gapminder)
 
 **Observations**: This function allows us to test three models at once to a set of data with a `Life expectancy` and `year` variables, extract the parameters of interest from each model and compared them easily in a single output table; So, now we can use this function to fit the models for each continent (or country)...
 
-Let's try it for each continent, using the function `do`
+Let's try it for each continent, using the function `do`. We can check the output in a table
 
 ```{r}
 gapminder %>% 
@@ -130,50 +130,70 @@ gapminder %>%
   knitr::kable(format = "markdown")
 ```
 
+Or visualize one parameter, such as the Adjusted R-squared per model for each continent in a graph...
+
+```{r}
+gapminder %>% 
+  group_by(continent) %>% 
+  do(fit_all_models(.)) %>% 
+  ggplot(aes(x=continent, y= Rsquared , fill = Model)) +
+           geom_bar(position = "dodge", stat = "identity") +
+           theme_classic()
+```
+
 Now we can compare the `Intercept`, `Slope` and `Adjusted R-squared` per model for each continent with a single function that can be modified easily, if we want to extract something else from these models. Of course for statistical purposes, it is necessary to explore other aspects of these models, such as the estimated coefficients, F-test, etc... and not just the Adjusted R-squared values...
 
 # Work with a nested data frame
 
-**Objective**: Create a nested data frame and map a function over the list column holding the nested data.
+**Objective**: Create a nested data frame and map a function over the list column holding the nested data. Try to extract parameters from the models and go back to a simple data frame with summarized results.
 
-**Process**: I will apply the function I created `fit_all_models` over a nested dataframe
-
-```{r}
-(gapminder %>% 
-  group_by(continent, country) %>% 
-  do(fit_all_models(.))) %>% 
-  head() %>% 
-  knitr::kable(format = "markdown")
-```
-
-First, we "nest" the data by continent and country, 
+**Process**: 
+First, I will "nest" the data in gapminder by continent and country, using `nest()`... 
 
 ```{r}
 gap_nested <- gapminder %>% 
   group_by(continent, country) %>% 
   nest()
-head(gap_nested)
+gap_nested
 ```
 
-Apply function
+We can see that this "new" dataframe collapsed all information associated to each country in a new variable `data` of the type `list`. I don't really need to inspect this list, since we know what there is inside, but just to give an example to my future self, this is how I can access information for a specific element.
 
 ```{r}
-(map(gap_nested$data[1:2], fit_all_models))
+gap_nested[[1, "data"]]
 ```
 
-```{r}
+Now, I can start applying **my** function `fit_all_models` over the nested dataframe. Let's do it for all countries applying `purrr:map()`. Following the recommendation in the [split-apply-combine](http://stat545.com/block024_group-nest-split-map.html) lesson, we can use mutate to create a new column in the same dataframe for the output of this function...
+
+```{r warning=FALSE}
 (gap_nested <- gap_nested %>% 
   mutate(model_fits = map(data, fit_all_models)))
 ```
 
+Now, we have a column with the output of the function `fit_all_models` called `model_fits`, which happens to be another tibble... Again, we can inspect the info in that element for the first country in the database...
+
+```{r}
+gap_nested[[1, "model_fits"]]
+```
+
+Finally, we can extract the information in this column for all countries by `unnesting` the dataframe to a normal tibble...
+
 ```{r}
 (gap_nested %>% 
    select(continent, country, model_fits) %>% 
-   unnest(model_fits))
+   unnest(model_fits) %>% 
+   head())
 ```
 
+**Okay**, so far so good... I practice applying a function that I created over elements of a nested dataframe. However, for this specific example, you might notice that this long process was unnecessary, given that in my original function, I already specified the elements I wanted from the models, so, just by simply applying the function over the database, grouped by continent and country, I will obtain exactly the same dataframe as above...
 
-
+```{r warning=FALSE}
+(gapminder %>% 
+  group_by(country, continent) %>% 
+  do(fit_all_models(.))) %>% 
+  head() %>% 
+  knitr::kable(format = "markdown")
+```
 
 
 
