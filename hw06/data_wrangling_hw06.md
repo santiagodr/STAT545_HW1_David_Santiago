@@ -4,6 +4,7 @@ Santiago David
 2017-11-07
 
 -   [Writing functions](#Writing-functions)
+-   [Work with a nested data frame](#Work-with-a-nested-data-frame)
 
 #### Load data and packages
 
@@ -13,6 +14,7 @@ suppressPackageStartupMessages(library(gapminder))
 suppressPackageStartupMessages(library(purrr))
 suppressPackageStartupMessages(library(stringr))
 suppressPackageStartupMessages(library(broom))
+suppressPackageStartupMessages(library(robust))
 data("gapminder")
 ```
 
@@ -183,7 +185,7 @@ gapminder %>%
 | Asia      | Robust    |   47.43609|  0.4704215|  0.4580228|
 | Europe    | Linear    |   65.80055|  0.2219321|  0.4970649|
 | Europe    | Quadratic |   65.05472|  0.3114316|  0.5019442|
-| Europe    | Robust    |   67.07912|  0.1969165|  0.5597118|
+| Europe    | Robust    |   67.07912|  0.1969165|  0.5597117|
 | Oceania   | Linear    |   68.54372|  0.2102724|  0.9519800|
 | Oceania   | Quadratic |   69.49916|  0.0956199|  0.9736564|
 | Oceania   | Robust    |   68.58637|  0.2095208|  0.9473769|
@@ -329,7 +331,7 @@ Finally, we can extract the information in this column for all countries by `unn
 
 A more interesting scenario would be one in which rather than obtaining just those three elements from the models, we can obtain all the information produced when you fit a linear model, such as estimates, std.errors, F-statistics, etc... All that information is usually captured in the `summary` of the object lm, and can be extracted in a nice and tidy way using the [broom](https://github.com/tidyverse/broom) package
 
-Let's a create a new simplified function that keeps all the information from the model objects
+Let's a create a new simplified function that keeps all the information from the model objects in a list object
 
 ``` r
 fit_models_complete <- function(dat, offset = 1952) {
@@ -404,7 +406,7 @@ gapminder %>%
     ## 10    Europe     Belgium <tibble [12 x 4]> <list [3]>
     ## # ... with 132 more rows
 
-**Wow** Now I added another level of complexity to this dataframe, the new column `model_fits`, is actually another list with 3 elements, which are the results of each model... Let's try to confirm that by inspecting the first model results for the first element (country)
+**Wow!!!** Now I added another level of complexity to this dataframe, the new column `model_fits`, is actually another list with 3 elements, which are the results of each model... Let's try to confirm that by inspecting the first model results for the first element (country)
 
 ``` r
 gap_nested_all_models[[1, "model_fits"]][1]
@@ -419,8 +421,14 @@ gap_nested_all_models[[1, "model_fits"]][1]
     ##      (Intercept)  I(year - offset)  
     ##          29.9073            0.2753
 
-Another option using Broom... Explore later
+As we know, `lm` objects have a lot of information, and by applying the function I created, we basically calculate that for three models for each country and keep all that information in a list into the dataframe, but we need access to the information. So, let's try to use `broom`.
 
-{r} tidy(linear\_mod) tidy(quadra\_mod) glance(quadra\_mod) tidy(robust\_mod)
+``` r
+#tidy(gap_nested_all_models[[1, "model_fits"]][1])
+#glance(gap_nested_all_models[[1, "model_fits"]][1])
+#augment(gap_nested_all_models[[1, "model_fits"]][1])
+```
 
-Another option for robust regression {r} library(robust)
+It seems that the functions `tidy`, `glance`, and `augment` from **broom** need one list for one specific model at the time for each element... Given that I created a function that combine all the results from three models into one list, it is not possible to use those functions in this dataframe... OR maybe there is one?, if you have any advice... please let me know!!!, I tried to extract the results of one model for one element as a new object, but still it wasn't possible to apply these functions, given the structure of the "messy" dataframe I created...
+
+The alternative would be to create one single function for each model, and incorporate the outputs to the nested dataframe, basically following the same logic for a simple linear model on the [webpage](http://stat545.com/block024_group-nest-split-map.html).
