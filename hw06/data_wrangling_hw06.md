@@ -183,7 +183,7 @@ gapminder %>%
 | Asia      | Robust    |   47.43609|  0.4704215|  0.4580228|
 | Europe    | Linear    |   65.80055|  0.2219321|  0.4970649|
 | Europe    | Quadratic |   65.05472|  0.3114316|  0.5019442|
-| Europe    | Robust    |   67.07912|  0.1969165|  0.5597119|
+| Europe    | Robust    |   67.07912|  0.1969165|  0.5597118|
 | Oceania   | Linear    |   68.54372|  0.2102724|  0.9519800|
 | Oceania   | Quadratic |   69.49916|  0.0956199|  0.9736564|
 | Oceania   | Robust    |   68.58637|  0.2095208|  0.9473769|
@@ -327,8 +327,100 @@ Finally, we can extract the information in this column for all countries by `unn
 | Albania     | Europe    | Quadratic |   56.85313|  0.6198024|  0.9530084|
 | Albania     | Europe    | Robust    |   62.52934|  0.2510398|  0.9751008|
 
+A more interesting scenario would be one in which rather than obtaining just those three elements from the models, we can obtain all the information produced when you fit a linear model, such as estimates, std.errors, F-statistics, etc... All that information is usually captured in the `summary` of the object lm, and can be extracted in a nice and tidy way using the [broom](https://github.com/tidyverse/broom) package
+
+Let's a create a new simplified function that keeps all the information from the model objects
+
+``` r
+fit_models_complete <- function(dat, offset = 1952) {
+  # three models
+  linear <- lm(lifeExp ~ I(year - offset), dat)
+  quadra <- lm(lifeExp ~ I(year - offset) + I((year - offset)^2), dat)
+  robust <- robust::lmRob(lifeExp ~ I(year - offset), dat)
+  output <- list(Linear = linear, Quadratic = quadra, Robustlm = robust)
+  return(output)
+} 
+```
+
+Now, just to confirm that the function is doing what we want... I'll apply it to the first country "Afghanistan", the parameters should be the same than the ones reported in the previous two tables for the `coefficients`:
+
+``` r
+gapminder %>% 
+  filter(country == "Afghanistan") %>% 
+  fit_models_complete() 
+```
+
+    ## $Linear
+    ## 
+    ## Call:
+    ## lm(formula = lifeExp ~ I(year - offset), data = dat)
+    ## 
+    ## Coefficients:
+    ##      (Intercept)  I(year - offset)  
+    ##          29.9073            0.2753  
+    ## 
+    ## 
+    ## $Quadratic
+    ## 
+    ## Call:
+    ## lm(formula = lifeExp ~ I(year - offset) + I((year - offset)^2), 
+    ##     data = dat)
+    ## 
+    ## Coefficients:
+    ##          (Intercept)      I(year - offset)  I((year - offset)^2)  
+    ##            28.178687              0.482762             -0.003772  
+    ## 
+    ## 
+    ## $Robustlm
+    ## 
+    ## Call:
+    ## robust::lmRob(formula = lifeExp ~ I(year - offset), data = dat)
+    ## 
+    ## Coefficients:
+    ##      (Intercept)  I(year - offset)  
+    ##          29.2872            0.3152
+
+**Note** After trying to extract information using `Broom` from a robust regression using `robustbase::lmrob`, I discovered that broom cannot deal with objects of that class... so, I have to fit a robust regression using a different method in the package `robust::lmRob`, which broom recognizes..., for that reason the robust regression parameters might be a bit different.
+
+**Now** let's apply this function to the nested dataframe, the same way we did it before
+
+``` r
+(gap_nested_all_models <- gap_nested %>% 
+  mutate(model_fits = map(data, fit_models_complete)))
+```
+
+    ## # A tibble: 142 x 4
+    ##    continent     country              data model_fits
+    ##       <fctr>      <fctr>            <list>     <list>
+    ##  1      Asia Afghanistan <tibble [12 x 4]> <list [3]>
+    ##  2    Europe     Albania <tibble [12 x 4]> <list [3]>
+    ##  3    Africa     Algeria <tibble [12 x 4]> <list [3]>
+    ##  4    Africa      Angola <tibble [12 x 4]> <list [3]>
+    ##  5  Americas   Argentina <tibble [12 x 4]> <list [3]>
+    ##  6   Oceania   Australia <tibble [12 x 4]> <list [3]>
+    ##  7    Europe     Austria <tibble [12 x 4]> <list [3]>
+    ##  8      Asia     Bahrain <tibble [12 x 4]> <list [3]>
+    ##  9      Asia  Bangladesh <tibble [12 x 4]> <list [3]>
+    ## 10    Europe     Belgium <tibble [12 x 4]> <list [3]>
+    ## # ... with 132 more rows
+
+**Wow** Now I added another level of complexity to this dataframe, the new column `model_fits`, is actually another list with 3 elements, which are the results of each model... Let's try to confirm that by inspecting the first model results for the first element (country)
+
+``` r
+gap_nested_all_models[[1, "model_fits"]][1]
+```
+
+    ## $Linear
+    ## 
+    ## Call:
+    ## lm(formula = lifeExp ~ I(year - offset), data = dat)
+    ## 
+    ## Coefficients:
+    ##      (Intercept)  I(year - offset)  
+    ##          29.9073            0.2753
+
 Another option using Broom... Explore later
 
 {r} tidy(linear\_mod) tidy(quadra\_mod) glance(quadra\_mod) tidy(robust\_mod)
 
-Another option for robust regression {r} library(robust) robust &lt;- robust::lmRob(lifeExp ~ I(year - 1952), gapminder)
+Another option for robust regression {r} library(robust)
