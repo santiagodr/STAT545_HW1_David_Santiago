@@ -12,5 +12,12 @@ First, need to decide how to extract the data, using base R, or curl???
 
 
 
+### Citation for Data used in this homework
+
+- Wilman etal. 2014 Elton Traits 1.0: Species-level foraging attributes of the world's birds and mammals. Ecology 95:2027 [link](http://onlinelibrary.wiley.com/doi/10.1890/13-1917.1/abstract)
+- Ricklefs 2017 Passerine morphology: external measurements of approximately one-quarter of passerines bird species. Ecology 98(5): 1472 [link](http://onlinelibrary.wiley.com/doi/10.1002/ecy.1783/suppinfo)
+
 ### Additional resources
+
+- One of the files was a zip file. I followed recommendations from this stackoverflow [post](https://stackoverflow.com/questions/3053833/using-r-to-download-zipped-data-file-extract-and-import-data) to read that type of data. **Very useful**
 
