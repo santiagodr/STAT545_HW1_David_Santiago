@@ -21,3 +21,5 @@ First, need to decide how to extract the data, using base R, or curl???
 
 - One of the files was a zip file. I followed recommendations from this stackoverflow [post](https://stackoverflow.com/questions/3053833/using-r-to-download-zipped-data-file-extract-and-import-data) to read that type of data. **Very useful**
 
+
+- To fix names I used str_c from `stringr` following some recommendations from this [blog](https://blog.exploratory.io/7-most-practically-useful-operations-when-wrangling-with-text-data-in-r-7654bd9d1a0c)

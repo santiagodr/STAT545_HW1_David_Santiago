@@ -1,0 +1,10 @@
+---
+title: "Automating Data-analysis Pipelines"
+author: "Santiago David"
+date: '2017-11-14'
+output: 
+  html_document:
+    keep_md: yes
+---
+
+
