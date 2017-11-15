@@ -8,3 +8,9 @@ output:
 ---
 
 
+**First**, let's check at the distribution of some functional and morphological traits for 1975 species of birds. 
+
+- How many species of birds belong to one of the five dominant diet categories PlantSeed,  FruiNect, Invertebrate, VertFishScav or Omnivore
+
+[](link)
+
