@@ -19,8 +19,12 @@ bird_morph_data <- bird_morph_data %>%
   mutate(Scientific = str_c(Genus, Species, sep = " "))
 
 # There are 9995 species in func_data vs 2366 species in morph_data
-# Join both databases, but only keeping the species in common (2366)
+# Join both databases, but only keeping the species in common
+# select only meaningful variables for functional or morphological traits
 
-bird_morph_data %>% 
+bird_data_clean <- bird_morph_data %>% 
   inner_join(bird_func_data) %>% 
-  View
+  select(Family, Scientific, `BodyMass-Value`, Length:`Bill D`, `Diet-Inv`:`Diet-5Cat`, 
+         `ForStrat-watbelowsurf`:PelagicSpecialist, Nocturnal)
+
+write_csv(bird_data_clean, "bird_data_clean.csv")
