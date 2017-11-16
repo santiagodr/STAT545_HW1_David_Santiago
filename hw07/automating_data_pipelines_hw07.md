@@ -48,7 +48,7 @@ Now, lets jump to some summary figures! (the only purpose of this Rmd file)
 
 ![fig5](fig5_tarsus_mass.png)
 
-####**Observations**
+#### **Observations**
 The magic of this exercise, is that by combining two databases for morphological and functional tratis of about 2000 bird species, we can really explored a lot of potential patterns and predictions, both with analysis and graphs.  
 This might serve as a tool for anyone interested in playing with this data, and to myself for some of my own research analysis in the future.
 
