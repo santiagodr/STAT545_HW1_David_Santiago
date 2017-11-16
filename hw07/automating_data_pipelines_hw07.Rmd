@@ -35,23 +35,23 @@ Now, lets jump to some summary figures! (the only purpose of this Rmd file)
 
 - How many species of birds belong to one of the five dominant diet categories PlantSeed,  FruiNect, Invertebrate, VertFishScav or Omnivore
 
-[fig1](fig_spbydiet.png)
+![fig1](fig1_spbydiet.png)
 
 - Diet in this database is also represented as the % use of different food sources per species, lets show this visaully for 9 species selected at random from the pool. Some of them might be 100% insectivorous or a mixed of 50-50% two types of diet
 
-[fig2](fig2_sample_diet_use.png)
+![fig2](fig2_sample_diet_use.png)
 
 - Now, more complex graphs. Let's explore the distribution of different morphological traits per diet category. Can you spot some outliers in terms of their mass?, or the size of their bills?
 
-[fig3](fig3_trait_distribution_per_diet.png)
+![fig3](fig3_trait_distribution_per_diet.png)
 
 -  Birds' bill morphology and mass might be related to their primary diet. Lets plot the relationship between Body mass and Bill length for 1975 species, but identifying each diet category
 
-[fig4](fig4_bill_mass.png)
+![fig4](fig4_bill_mass.png)
 
 - And now, what about tarsus and mass?, are there differences in this relationship for each of the diet groups? Check at the difference in slopes for each diet group...
 
-[fig5](fig5_tarsus_mass.png)
+![fig5](fig5_tarsus_mass.png)
 
 ####**Observations**
 The magic of this exercise, is that by combining two databases for morphological and functional tratis of about 2000 bird species, we can really explored a lot of potential patterns and predictions, both with analysis and graphs.  
