@@ -6,7 +6,7 @@ My name is **Santiago David**, and I'm a PhD student in the [Jankowski Lab](http
 Please follow the links to specific homework!
 ### STAT 547M
 
-- **Homework 07** Due Nov 14, 2017 Automating Data-analysis / pipelines
+- [**Homework 07**](https://github.com/santiagodr/STAT545_hw_David_Santiago/tree/master/hw07) Due Nov 14, 2017 Automating Data-analysis / pipelines
 - [**Homework 06**](https://github.com/santiagodr/STAT545_hw_David_Santiago/tree/master/hw06) Due Nov 10, 2017 data wrangling / functions / nested df
 
 ### STAT 545A
