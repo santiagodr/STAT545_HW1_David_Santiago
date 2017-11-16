@@ -15,23 +15,23 @@ The original publications that provided these **awesome** databases are:
 
 These two databases provide a unique oportunity to explore the relationship between morphology and ecological function for hundreds of species of birds, but to do that we have to download the data, join, clean, tidy and analyze them...
 
-###**Main objectives**: 
+### **Main objectives**: 
 The general objective is to build an analytical pipeline using `Make` that can run different Rscripts to 
 1 - Download data from the internet from two sources
 2 - Read, Join, Filter and Clean the data for Analysis and Graphics
 3 - Analyze the combined dataset in different ways to produce some summary graphs
 4 - Render this R Markdown document without using RStudio's buttons.
 
-####**Secondary objectives**
+### **Secondary objectives**
 The authors of these two papers did a really good job in "Tidying" the data, so that the published databases are more or less clean... However, I still had to practice a lot of the tools we learn in STAT545 such as `joins`, `dplyr`, `write data in and out`, lots of `ggplot`, and some new things such as extracting data from a `.zip` file (Yes! we can do that...)
 
-#### Files in this folder
+### Files in this folder
 
 I'm not going to repeat the codes I used in each single file, because the idea in this assignment is to focus in the pipeline. So, if you are curious about each step, please go to the files and inspect the code in the plain Rscripts... I tried to include comments before each chunk so that the purpose of the code is clear.
 
 Now, lets jump to some summary figures! (the only purpose of this Rmd file)
 
-#### Figures
+### Figures
 
 - How many species of birds belong to one of the five dominant diet categories PlantSeed,  FruiNect, Invertebrate, VertFishScav or Omnivore
 
