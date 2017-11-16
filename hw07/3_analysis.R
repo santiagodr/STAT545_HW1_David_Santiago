@@ -6,6 +6,13 @@ library(tidyverse)
 # Load clean file
 bird_data <- read_csv("bird_data_clean.csv")
 
+# fix class of some variables
+bird_data <- bird_data %>% 
+  mutate(Length = as.double(Length),
+         Tarsus = as.double(Tarsus),
+         Toe = as.factor(Toe),
+         `Diet-5Cat` = as.factor(`Diet-5Cat`))
+
 glimpse(bird_data)
 
 # Number of species in each Diet category
@@ -55,12 +62,23 @@ ggplot(aes(x = `Diet-5Cat`, y = value, fill = `Diet-5Cat`)) +
 ggsave("fig3_trait_distribution_per_diet.png", plot = fig3, width = 6, height = 6)
 
 
+# Is there a difference between Mass and Bill length among diet categories
+fig4 <- bird_data %>% 
+  ggplot(aes(`BodyMass-Value`, `Bill L`)) + theme_bw() +
+  geom_jitter(aes(col = `Diet-5Cat`), alpha = 0.5) +
+  scale_x_log10() +
+  scale_y_log10() +
+  geom_smooth(aes(col = `Diet-5Cat`), method = lm, se = F) +
+  labs(x = "log Body Mass (g)", y = "log Bill Length (mm)")
+ggsave("fig4_bill_mass.png", plot = fig4, width = 6, height = 6) 
 
-#one trait
-bird_data %>% 
-  ggplot(aes(x = `Diet-5Cat`, y = `BodyMass-Value`)) +
-  geom_boxplot() +
-  labs(x = "Diet categories", y = "Mean value of trait") +
-  theme_bw()
-
+# What about Tarsus length and Mass among diet categories
+fig5 <- bird_data %>% 
+  ggplot(aes(`BodyMass-Value`, Tarsus)) + theme_bw() +
+  geom_jitter(aes(col = `Diet-5Cat`), alpha = 0.5) +
+  scale_x_log10() +
+  scale_y_log10() +
+  geom_smooth(aes(col = `Diet-5Cat`), method = lm, se = F) +
+  labs(x = "log Body Mass (g)", y = "log Tarsus (mm)")
+ggsave("fig5_tarsus_mass.png", plot = fig5, width = 6, height = 6)
 
