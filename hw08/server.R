@@ -7,7 +7,7 @@ library(shinythemes)
 library(DT)
 
 # specify all the input/outputs
-server <- function(input, output) {
+shinyServer <- function(input, output) {
   bcl_data <- read_csv("bcl-data.csv")
   filtered <- reactive({
     if(input$typeIn == 'WINE'){

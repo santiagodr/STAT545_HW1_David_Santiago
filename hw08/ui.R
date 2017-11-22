@@ -1,7 +1,7 @@
 # ui file for hw08 Shiny app based on BC Liquor store exercise
 
 # define all parameters to be displayed in the app
-ui <- fluidPage(theme = shinytheme("yeti"),
+shinyUI <- fluidPage(theme = shinytheme("yeti"),
   # Application title
   titlePanel("BC Liquor store prices - (STAT547 HW08 SantiagoD version)"),
   
@@ -31,3 +31,4 @@ ui <- fluidPage(theme = shinytheme("yeti"),
             DT::dataTableOutput("results")
             )
 )
+

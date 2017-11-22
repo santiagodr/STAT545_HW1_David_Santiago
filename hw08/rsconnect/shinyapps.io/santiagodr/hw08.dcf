@@ -1,0 +1,12 @@
+name: hw08
+title: hw08
+username:
+account: santiagodr
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 238823
+bundleId: 1089925
+url: https://santiagodr.shinyapps.io/hw08/
+when: 1511342127.49855
+asMultiple: FALSE
+asStatic: FALSE
