@@ -2,8 +2,8 @@
 
 ### Files
 
-- Here is the final product, a Shiny app for the BC liquor store products, version SantiagoD
-- If needed, you can check the `server.R` code here and `ui.R` code here
+- Here is the [**final product**](https://santiagodr.shinyapps.io/hw08/), a Shiny app for the BC liquor store products, version SantiagoDavid
+- If needed, you can check the `server.R` code [here](https://github.com/santiagodr/STAT545_hw_David_Santiago/blob/master/hw08/server.R) and `ui.R` code [here](https://github.com/santiagodr/STAT545_hw_David_Santiago/blob/master/hw08/ui.R)
 
 ### Process
 For this assignment I decided to add some features and improve the BC liquor store prices app that we started in class. 
