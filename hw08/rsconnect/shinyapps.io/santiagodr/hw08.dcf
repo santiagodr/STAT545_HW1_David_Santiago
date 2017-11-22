@@ -5,8 +5,8 @@ account: santiagodr
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 238823
-bundleId: 1089925
+bundleId: 1089977
 url: https://santiagodr.shinyapps.io/hw08/
-when: 1511342127.49855
+when: 1511344287.19672
 asMultiple: FALSE
 asStatic: FALSE
