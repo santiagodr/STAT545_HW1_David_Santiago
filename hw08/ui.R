@@ -16,7 +16,7 @@ ui <- fluidPage(theme = shinytheme("yeti"),
               
               checkboxGroupInput("typeIn", "Product type(s)",
                             choices = c("BEER", "SPIRITS", "WINE"),
-                            selected = c("BEER")),
+                            selected = c("WINE")),
   
               conditionalPanel(
               condition = "input.typeIn == 'WINE'",

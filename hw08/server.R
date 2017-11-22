@@ -10,12 +10,14 @@ library(DT)
 server <- function(input, output) {
   bcl_data <- read_csv("bcl-data.csv")
   filtered <- reactive({
+    if(input$typeIn == 'WINE'){
+      bcl_data %>% filter(Sweetness == input$sweetInput)
+    }
     bcl_data %>% 
     filter(Price >= input$priceIn[1],
            Price <= input$priceIn[2],
            Type == input$typeIn,
-           Country == input$countryInput,
-           Sweetness == input$sweetInput)
+           Country == input$countryInput)
   })
   
   # customize plot results
