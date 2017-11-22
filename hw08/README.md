@@ -17,9 +17,12 @@ For this assignment I decided to add some features and improve the BC liquor sto
 
 ### Additional features
 
-- from the base features we added, I modified the title, side bar text, and graph options 
+- From the base features we added, I modified the title, side bar text, and graph options, and included the country selector option. 
 - I added an image of the BC Liquor Store logo to the top of the sidebar Panel
 - I added a theme to my Shiny app using `shinythemes`
+- I modified the simple results table, to an interactive table using the `DT` package
+- I modified the `radioButtons` to `checkboxGroupInput` option, so that user can select several types of product at once
+- I included the option to download the filtered data as a csv file using `downloadHandler()` in the server file, and `downloadButton()` in the ui file
 
 
 ### Resources
