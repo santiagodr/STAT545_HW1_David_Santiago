@@ -22,7 +22,10 @@ shinyUI <- fluidPage(
               conditionalPanel(
               condition = "input.typeIn == 'WINE'",
               sliderInput("sweetInput", "Sweetness", min = 0,
-                          max = 10, value = 2))
+                          max = 10, value = 2)),
+              span("Data source:", 
+                   tags$a("OpenDataBC",
+                          href = "https://www.opendatabc.ca/dataset/bc-liquor-store-product-price-list-current-prices"))
   ),
   mainPanel(
             downloadButton("download", "Download results table"),
