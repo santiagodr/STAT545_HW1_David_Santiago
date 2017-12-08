@@ -127,34 +127,20 @@ extract_papers <- function(sciName){
 Now, we can `map` this function to the ubc bird list and save it on the dataframe, and because the result of the `searchplos()` function is a list, it means we will have a nested dataframe... Luckily we learned how to handle those...
 
 ```{r}
-ubcbirdlist
+(ubcbirds2 <- ubcbirds2 %>% 
+  mutate(info_papers = map(sciName, extract_papers)))
+```
 
-extract_papers <- function(x){
-  sciName = x
-  info <- searchplos(q = x, fl = c("id", "publication_date", "title", "abstract"), sleep = 10)
-  n_papers = info$meta$numFound
-  data_papers = as.list(info$data)
-  tibble(sciName, n_papers, data_papers)
-}
+Pretty good ehh! Now, our original question is, **how many articles have been published on a bird species?** This information is contained in our list object `info_papers`, but let's make it more explicit by extracting the number of papers from the object, but also keeping all the information ("id", "publication_date", "title", "abstract") in another list in the dataframe...
 
-extract_papers <- function(x){
-  searchplos(q = x, fl = c("id", "publication_date", "title", "abstract"), sleep = 10)
-}
+```{r}
+ubcbirds2 <- ubcbirds2 %>% 
+  mutate(N_papers = ubcbirds2$info_papers %>%
+                    map_int(~ .x[[1]][[1]][[1]]), # extract only number of papers
+        info_papers = ubcbirds2$info_papers %>%
+                      map(~ .x[[2]]))  # extract list of papers and override that column
 
-lapply(q, extract_papers) %>% unnest(meta)
-
-ubcbird2 %>% 
-  mutate(data_articles = map(x, extract_papers))
-
- tibble(sciName = x, n_articles = info$meta$numFound, data = as.list(info$data)) 
-
-lapply(q, extract_papers)
-  
-searchplos(q = ,
-           fl = c("id", "publication_date", "title", "abstract"))
-
-q <- c('Poecile atricapillus','Melospiza melodia','Junco hyemalis')
-lapply(q, function(x) searchplos(x, limit=2))
+head(ubcbirds2)
 ```
 
 
