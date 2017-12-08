@@ -24,16 +24,16 @@ Specifically, I did the following:
 
 **First**, we need to install and load both packages
 ```{r}
-install.packages("rebird")
-install.packages("rplos")
+#install.packages("rebird")
+#install.packages("rplos")
 suppressPackageStartupMessages(library(rebird))
 suppressPackageStartupMessages(library(rplos))
 suppressPackageStartupMessages(library(tidyverse))
 suppressPackageStartupMessages(library(knitr))
 ```
 
-**rebird data**
-There are several ways to extract information from **eBird** using rebird, for example, you can search bird species for a "region", using short codes that refers to political units, for example a country, lets explore the number of birds recorded for CANADA = CAN
+**`rebird` data**
+There are several ways to extract information from **eBird** using `rebird`, for example, you can search bird species for a "region", using short codes that refers to political units, for example a country, lets explore the number of birds recorded for CANADA = CAN
 
 ```{r}
 canadianbirds <- ebirdregion("CA")
@@ -77,10 +77,10 @@ ubcbirds2 <- ubcbirds %>%
   select(sciName, howMany, comName, lat, lng)
 ```
 
-
-
+**`rplos` data**
+Now we can use `rplos` package to extract information from full text articles from the Public Library of Science journals using their API
 
 ```{r}
-ebirdgeo(species = 'hypopyrrhus pyrohypogaster', lat = 4, lng = -74)
+searchplos('Corvus caurinus', 'id,publication_date', limit = 5)
 ```
 
