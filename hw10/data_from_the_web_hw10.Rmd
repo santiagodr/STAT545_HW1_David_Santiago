@@ -140,8 +140,27 @@ ubcbirds2 <- ubcbirds2 %>%
         info_papers = ubcbirds2$info_papers %>%
                       map(~ .x[[2]]))  # extract list of papers and override that column
 
-head(ubcbirds2)
+head(ubcbirds2) 
 ```
 
+Excellent!, Basically this is what I wanted a dataframe with the bird species recorded in eBird in the last month for the UBC campus, and a list of the papers published in PLOS for each of those species, I also extracted important info from those papers such as the "publication_date", "title", and "abstract"... 
+
+Now, we can easily `unnest()` these papers list and export that info as a .csv file if we want to have a separate copy
+
+```{r}
+full_list <- ubcbirds2 %>% 
+  unnest(info_papers)
+
+head(full_list) #see head of full list
+
+write_csv(full_list, "ubc_birds_papers_published.csv") #save file
+```
+
+The one last thing, I would like to do, is just visualize the number of papers published per species...
+
+```{r}
+ubcbirds2 %>% 
+  ggplot()
+```
 
 
