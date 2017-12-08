@@ -26,10 +26,10 @@ Specifically, I did the following:
 ```{r}
 #install.packages("rebird")
 #install.packages("rplos")
-suppressPackageStartupMessages(library(rebird))
-suppressPackageStartupMessages(library(rplos))
 suppressPackageStartupMessages(library(tidyverse))
 suppressPackageStartupMessages(library(knitr))
+suppressPackageStartupMessages(library(rebird))
+suppressPackageStartupMessages(library(rplos))
 ```
 
 **`rebird` data**
@@ -77,12 +77,6 @@ ubcbirds2 <- ubcbirds %>%
   select(sciName, howMany, comName, lat, lng)
 ```
 
-Finally, it would be also useful to create an object of the type `list` only with the species names, to retrieve information in the next part...
-
-```{r}
-ubcbirdlist <- ubcbirds2$sciName
-```
-
 
 **`rplos` data**
 Now we can use `rplos` package to extract information of articles from the Public Library of Science journals using their API. The package offers a wide range of functions to access this information, such as:
@@ -112,9 +106,25 @@ This simple code basically sends a request to the PLOS API to retrieve informati
 crowpapers
 ```
 
-This object is basically a list with two elements `$meta` which stands for the number of records found and `$data` which contains the information we asked PLOS for... So, this is useful... Let's get the information for the 17 species in our list...
+This object is basically a list with two elements `$meta` which stands for the number of records found and `$data` which contains the information we asked PLOS for... So, this is useful... We want this information for the 17 species in our list!
 
-Now, lets get the data for the 17 species in our UBC-bird-list, I will define a function that run the query and retrieve the information for each species name, and that returns a dataframe with the name of the species, the number of papers published for each one, and all the rest of the information we want in a list... I have to include a `sleep time` parameter, because there is maximum of 10 request per minute on the website.
+But, let's explore the number of papers published for this species, we can access that info by getting into the list elements
+
+```{r}
+crowpapers$meta$numFound
+```
+
+There were four papers retrieved!
+
+Now, to get the data for the 17 species in our UBC-bird-list, I will define a function that run the query and retrieve the information for each species name... It will be good to include a `sleep time` parameter, because there is a maximum limit of 10 request per minute on the website.
+
+```{r}
+extract_papers <- function(sciName){
+  searchplos(q = sciName, fl = c("id", "publication_date", "title", "abstract"), sleep = 10)
+}
+```
+
+Now, we can `map` this function to the ubc bird list and save it on the dataframe, and because the result of the `searchplos()` function is a list, it means we will have a nested dataframe... Luckily we learned how to handle those...
 
 ```{r}
 ubcbirdlist
