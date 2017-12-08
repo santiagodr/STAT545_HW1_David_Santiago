@@ -1,0 +1,39 @@
+---
+title: "Data from the Web"
+author: "Santiago David"
+date: '2017-12-07'
+output: github_document
+---
+
+Since we already practiced with Web scraping and using API queries in class, I decided that for this homeworkd I will use an R package that wraps an API from the rOpenSci in order to get data from the web.
+
+`reBird` is a package that interface with the [eBird](http://ebird.org/content/ebird/) website, which is a real-time, online bird checklist program that allows birders to record the birds they see, keep track of their lists and at the same time, contribute to science and conservation. Click [here](https://github.com/ropensci/rebird) for more info
+
+`rplos` on the other side, is a package for accessing full text articles from the Public Library of Science journals using their API. Click [here](https://github.com/ropensci/rplos) for more info.
+
+### **Main objectives**: 
+The general objective is to combine information from these two rOpenSci packages to explore how many articles have been published on a bird species. I will do these for all the bird species recorded on eBird for the UBC campus.
+
+Specifically, I did the following:
+1 - Download data from the internet from two sources
+2 - Read, Join, Filter and Clean the data for Analysis and Graphics
+3 - Analyze the combined dataset in different ways to produce some summary graphs
+4 - Render this R Markdown document without using RStudio's buttons.
+
+### **Process**
+
+**First**, we need to install and load both packages
+```{r}
+install.packages("rebird")
+install.packages("rplos")
+suppressPackageStartupMessages(library(rebird))
+suppressPackageStartupMessages(library(rplos))
+```
+
+**rebird data**
+There are several ways to extract information from **eBird** using rebird, for example, you can search bird species by geography using either the 
+
+```{r}
+ebirdgeo(species = 'hypopyrrhus pyrohypogaster', lat = 4, lng = -74)
+```
+
