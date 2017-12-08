@@ -7,18 +7,16 @@ output: github_document
 
 Since we already practiced with Web scraping and using API queries in class, I decided that for this homeworkd I will use an R package that wraps an API from the rOpenSci in order to get data from the web.
 
-`reBird` is a package that interface with the [eBird](http://ebird.org/content/ebird/) website, which is a real-time, online bird checklist program that allows birders to record the birds they see, keep track of their lists and at the same time, contribute to science and conservation. Click [here](https://github.com/ropensci/rebird) for more info
+####`reBird` 
 
-`rplos` on the other side, is a package for accessing full text articles from the Public Library of Science journals using their API. Click [here](https://github.com/ropensci/rplos) for more info.
+is a package that interface with the [eBird](http://ebird.org/content/ebird/) website, which is a real-time, online bird checklist program that allows birders to record the birds they see, keep track of their lists and at the same time, contribute to science and conservation. Click [here](https://github.com/ropensci/rebird) for more info
+
+####`rplos` 
+
+on the other side, is a package for accessing full text articles from the Public Library of Science journals using their API. Click [here](https://github.com/ropensci/rplos) for more info.
 
 ### **Main objectives**: 
-The general objective is to combine information from these two rOpenSci packages to explore how many articles have been published on a bird species. I will do these for all the bird species recorded on eBird for the UBC campus.
-
-Specifically, I did the following:
-1 - Download data from the internet from two sources
-2 - Read, Join, Filter and Clean the data for Analysis and Graphics
-3 - Analyze the combined dataset in different ways to produce some summary graphs
-4 - Render this R Markdown document without using RStudio's buttons.
+The general objective is to combine information from these two rOpenSci packages to explore teh question  **how many articles have been published on a bird species?**. I will do these for all the bird species recorded on eBird for the UBC campus.
 
 ### **Process**
 
@@ -32,7 +30,8 @@ suppressPackageStartupMessages(library(rebird))
 suppressPackageStartupMessages(library(rplos))
 ```
 
-**`rebird` data**
+####**`rebird` data**
+
 There are several ways to extract information from **eBird** using `rebird`, for example, you can search bird species for a "region", using short codes that refers to political units, for example a country, lets explore the number of birds recorded for CANADA = CAN
 
 ```{r}
@@ -49,6 +48,7 @@ For this, we can extract information for a particular geographic location by usi
 If we search for birds in [UBC campus](http://ebird.org/ebird/hotspot/L344557) on the website, we will observe something like this:
 
 ![](ebird_screenshot.png)
+
 But, we want to get that list on R..., so we can use the code for Vancouver-UBC which is "L344557". (Note: The maximum number of days back allowed to look for observations is 30)
 
 ```{r}
@@ -74,11 +74,12 @@ There are two dubious names on this list (i.e. observer didn't know exactly whic
 ```{r}
 ubcbirds2 <- ubcbirds %>% 
   filter(!(sciName == "Larinae sp." | sciName == "Accipiter striatus/cooperii")) %>% 
-  select(sciName, howMany, comName, lat, lng)
+  select(sciName, comName)
 ```
 
 
-**`rplos` data**
+####**`rplos` data**
+
 Now we can use `rplos` package to extract information of articles from the Public Library of Science journals using their API. The package offers a wide range of functions to access this information, such as:
 
 - `searchplos()`, the basic function for searching plos
@@ -116,7 +117,7 @@ crowpapers$meta$numFound
 
 There were four papers retrieved!
 
-Now, to get the data for the 17 species in our UBC-bird-list, I will define a function that run the query and retrieve the information for each species name... It will be good to include a `sleep time` parameter, because there is a maximum limit of 10 request per minute on the website.
+**Now**, to get the data for the 17 species in our UBC-bird-list, I will define a function that run the query and retrieve the information for each species name... It will be good to include a `sleep time` parameter, because there is a maximum limit of 10 request per minute on the website.
 
 ```{r}
 extract_papers <- function(sciName){
@@ -127,11 +128,15 @@ extract_papers <- function(sciName){
 Now, we can `map` this function to the ubc bird list and save it on the dataframe, and because the result of the `searchplos()` function is a list, it means we will have a nested dataframe... Luckily we learned how to handle those...
 
 ```{r}
-(ubcbirds2 <- ubcbirds2 %>% 
-  mutate(info_papers = map(sciName, extract_papers)))
-```
+ubcbirds2 <- ubcbirds2 %>% 
+  mutate(info_papers = map(sciName, extract_papers))
 
-Pretty good ehh! Now, our original question is, **how many articles have been published on a bird species?** This information is contained in our list object `info_papers`, but let's make it more explicit by extracting the number of papers from the object, but also keeping all the information ("id", "publication_date", "title", "abstract") in another list in the dataframe...
+head(ubcbirds2)
+glimpse(ubcbirds2)
+```
+Note the new variable `info_papers` of the type list! That's where all our information is contained...
+
+Pretty good ehh! Now, our original question was **how many articles have been published on a bird species?** This information is contained in our list object `info_papers`, but let's make it more explicit by extracting the number of papers from the object, but also keeping all the information ("id", "publication_date", "title", "abstract") in another list in the dataframe...
 
 ```{r}
 ubcbirds2 <- ubcbirds2 %>% 
@@ -160,7 +165,13 @@ The one last thing, I would like to do, is just visualize the number of papers p
 
 ```{r}
 ubcbirds2 %>% 
-  ggplot()
+  ggplot(aes(x = reorder(comName, -N_papers), y = N_papers)) +  theme_bw() +
+  geom_bar(stat = "identity") +
+  labs(x = "Bird species", y = "Number of published papers") +
+  theme(axis.text.x = element_text(angle=90, hjust = 1))
 ```
 
+Looks like a lot have been published on Rock Pigeons and very little on Varied Thrush!
 
+That's it!!!
+Happy holidays!
