@@ -63,15 +63,20 @@ ubcbirds %>%
 
 Apparently, in the last month, there have been only 19 species of birds recorded at UBC campus (or at least 19 submitted to ebird), we know there are way more birds on campus, but it's okay... We can work with this list and explore how many articles have been published about these species of birds. 
 
-But **before** moving to the second part, we should tidy this list first, right?, lets make sure scientific names are correct (i.e. binomial) and unique for each secies and select only the variables of interest...
+But **before** moving to the second part, we should tidy this list first, right?, lets make sure scientific names are correct (i.e. binomial) and unique for each secies...
 
 ```{r}
-ubcbirds$sciName
+ubcbirds$sciName 
 ```
 
-The first two names on this list are dubious
+There are two dubious names on this list (i.e. observer didn't know exactly which species it was), so let's get rid off them and select only variables of interest...
 
-Using `rebird` 
+```{r}
+ubcbirds2 <- ubcbirds %>% 
+  filter(!(sciName == "Larinae sp." | sciName == "Accipiter striatus/cooperii")) %>% 
+  select(sciName, howMany, comName, lat, lng)
+```
+
 
 
 
